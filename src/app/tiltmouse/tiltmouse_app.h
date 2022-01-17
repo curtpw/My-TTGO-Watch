@@ -1,7 +1,7 @@
 /****************************************************************************
- *   Sep 29 12:17:11 2021
- *   Copyright  2021  Dirk Brosswick
- *   Email: dirk.brosswick@googlemail.com
+ *   June 04 02:01:00 2021
+ *   Copyright  2021  Dirk Sarodnick
+ *   Email: programmer@dirk-sarodnick.de
  ****************************************************************************/
  
 /*
@@ -19,17 +19,15 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-#include "config.h"
-#include "mail_app_setup.h"
-#include "gui/mainbar/mainbar.h"
-#include "gui/widget_factory.h"
+#ifndef _TILTMOUSE_APP_H
+    #define _TILTMOUSE_APP_H
 
-lv_obj_t *mail_app_setup_tile = NULL;
+    #include <TTGO.h>
 
-void mail_app_setup( uint32_t tile_num ) {
-
-    mail_app_setup_tile = mainbar_get_tile_obj( tile_num );
+    void tiltmouse_app_setup( void );
+    uint32_t tiltmouse_app_get_app_main_tile_num( void );
     
-    lv_obj_t *header = wf_add_settings_header( mail_app_setup_tile, "mail setup" );
-    lv_obj_align( header, mail_app_setup_tile, LV_ALIGN_IN_TOP_LEFT, THEME_PADDING, THEME_PADDING );
-}
+    void enter_tiltmouse_app_event_cb( lv_obj_t * obj, lv_event_t event );
+    void exit_tiltmouse_app_event_cb( lv_obj_t * obj, lv_event_t event );
+
+#endif // _TILTMOUSE_APP_H

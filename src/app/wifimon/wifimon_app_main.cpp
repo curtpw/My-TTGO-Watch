@@ -22,6 +22,7 @@
 #include "hardware/wifictl.h"
 #include "hardware/display.h"
 
+
 #include "wifimon_app.h"
 #include "wifimon_app_main.h"
 
@@ -33,6 +34,14 @@
 #include "gui/widget_styles.h"
 #include "gui/widget_factory.h"
 
+#include "hardware/sound.h"
+#include "gui/sound/piep.h"
+#include "gui/sound/test_c_mouth.h"
+#include "hardware/motor.h"
+#include "hardware/powermgm.h"
+//#include "app/alarm_clock/alarm_in_progress.h"
+
+
 #ifdef NATIVE_64BIT
     #include <time.h>
     #include "utils/logging.h"
@@ -43,9 +52,12 @@
     #include <lwip/sockets.h>
     #include "esp_wifi.h"
 
+
     void wifimon_sniffer_packet_handler( void* buff, wifi_promiscuous_pkt_type_t type );
     static wifi_country_t wifi_country = {.cc="CN", .schan = 1, .nchan = 13}; 
 #endif
+
+
 
 lv_obj_t *wifimon_app_main_tile = NULL;
 lv_obj_t *chart = NULL;
@@ -56,6 +68,8 @@ lv_chart_series_t *ser3 = NULL;
 lv_task_t *_wifimon_app_task = NULL;
 int wifimon_display_timeout = 0;
 
+lv_task_t * _Play_Target_Sound_task = nullptr;  //curt add
+
 LV_IMG_DECLARE(exit_dark_48px);
 LV_IMG_DECLARE(wifimon_app_32px);
 LV_FONT_DECLARE(Ubuntu_72px);
@@ -65,6 +79,10 @@ static void wifimon_sniffer_set_channel( uint8_t channel );
 static void wifimon_app_task( lv_task_t * task );
 static void wifimon_activate_cb( void );
 static void wifimon_hibernate_cb( void );
+
+static void Play_Target_Sound_task( lv_task_t * task );   //curt add
+static void wifimon_test_play_sound( void );
+
 
 uint8_t level = 0, channel = 1;
 int data = 0, mgmt = 0, misc = 0; 
@@ -107,8 +125,30 @@ static void wifimon_channel_select_event_handler( lv_obj_t * obj, lv_event_t eve
     }
 }
 
-void wifimon_app_main_setup( uint32_t tile_num ) {
 
+ //curt add
+static void Play_Target_Sound_task( lv_task_t * task ){   //curt add
+        sound_set_enabled_config( true );
+    sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
+    sound_play_progmem_wav( piep_wav, piep_wav_len ); 
+    motor_vibe(100); 
+}
+
+static void wifimon_test_play_sound( void ) {
+        sound_set_enabled_config( true );
+    sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
+    sound_play_progmem_wav(test_c_mouth_wav, test_c_mouth_wav_len);
+}
+
+void wifimon_app_main_setup( uint32_t tile_num ) {
+    log_i("----------------- CURT -------- wifimon_app_main_setup__START SPIFF AUDIO");
+    //********************************************* CURT ADD AUDIO ***********************************************************************************************************
+    // CURT ADD !!!!!!!!!!!!!!!!
+//sound_play_progmem_wav(piep_wav, piep_wav_len);
+//sound_play_progmem_wav(piep_wav, 12318);
+
+
+    log_i("----------------- CURT -------- wifimon_app_main_setup");
     wifimon_app_main_tile = mainbar_get_tile_obj( tile_num );
     /**
      * add chart widget
@@ -137,7 +177,7 @@ void wifimon_app_main_setup( uint32_t tile_num ) {
      * add channel select roller
      */
     channel_select = lv_roller_create(wifimon_app_main_tile, NULL);
-    lv_roller_set_options( channel_select, "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13", LV_ROLLER_MODE_INIFINITE );
+    lv_roller_set_options( channel_select, "IMU\nTherm\nLidar\nIR\nTemp\nLight\nRGB\nAcc\nGyro\nDist\nProx\nAct\nResp", LV_ROLLER_MODE_INIFINITE );
     lv_roller_set_visible_row_count( channel_select, 5 );
     lv_obj_align( channel_select, NULL, LV_ALIGN_IN_TOP_LEFT, THEME_ICON_PADDING, THEME_ICON_PADDING );
     lv_obj_set_event_cb( channel_select, wifimon_channel_select_event_handler );
@@ -148,7 +188,7 @@ void wifimon_app_main_setup( uint32_t tile_num ) {
     lv_label_set_long_mode( chart_series_label, LV_LABEL_LONG_BREAK );
     lv_label_set_recolor( chart_series_label, true );
     lv_label_set_align( chart_series_label, LV_LABEL_ALIGN_RIGHT );       
-    lv_label_set_text( chart_series_label, "#ffff00 - misc#\n#ff0000 - mgmt#\n#11ff00 - data#"); 
+    lv_label_set_text( chart_series_label, "#ffff00 - xxxx#\n#ff0000 - yyyy#\n#11ff00 - zzzz#"); 
     lv_obj_set_width( chart_series_label, 70 );
     lv_obj_align( chart_series_label, NULL, LV_ALIGN_IN_TOP_RIGHT, -THEME_ICON_PADDING, THEME_ICON_PADDING );
 
@@ -164,10 +204,15 @@ static void exit_wifimon_app_main_event_cb( lv_obj_t * obj, lv_event_t event ) {
 }
 
 static void wifimon_hibernate_cb( void ) {
+    log_i("----------------- CURT -------- wifimon_hibernate_cb");
     if(_wifimon_app_task != NULL) {
         lv_task_del(_wifimon_app_task);
         _wifimon_app_task = NULL;
     }  
+
+    sound_set_enabled_config( true );   //CURT ADD
+    sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
+    
 #ifdef NATIVE_64BIT
 
 #else
@@ -181,6 +226,14 @@ static void wifimon_hibernate_cb( void ) {
 }
 
 static void wifimon_activate_cb( void ) {
+    log_i("----------------- CURT -------- wifimon_activate_cb");
+ //   alarm_in_progress_start_alarm();
+
+    sound_set_enabled_config( true );
+    sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
+
+    sound_set_enabled_config( true );   
+    sound_play_progmem_wav(test_c_mouth_wav, test_c_mouth_wav_len);
     /**
      * restart wifi
      */
@@ -204,7 +257,7 @@ static void wifimon_activate_cb( void ) {
     /**
      * start stats fetch task
      */
-    _wifimon_app_task = lv_task_create( wifimon_app_task, 1000, LV_TASK_PRIO_MID, NULL );
+    _wifimon_app_task = lv_task_create( wifimon_app_task, 100, LV_TASK_PRIO_MID, NULL );
     /**
      * save display timeout time
      */
@@ -216,9 +269,52 @@ static void wifimon_app_task( lv_task_t * task ) {
     /**
      * limit scale
      */
+
+    // ------------- CURT ADD ----------------------
+    log_i("----------------- CURT -------- wifimon_app_task");
+        TTGOClass * ttgo = TTGOClass::getWatch();
+
+    Accel acc;
+    ttgo->bma->getAccel(acc);
+    log_i("acc.x: %d", acc.x);
+    log_i("acc.y: %d", acc.y);
+
+    //int16_t x = acc.x * MOUSE_SENSIVITY;
+    //int16_t y = acc.y * MOUSE_SENSIVITY;
+    mgmt = ((acc.x + 1000) / 20);
+    data = ((acc.y + 1000) / 20);
+
+    if( mgmt < 0 ) mgmt = 0; 
+    if( data < 0 ) data = 0; 
+    if( misc < 0 ) misc = 0; 
     if( mgmt > 100 ) mgmt = 100; 
     if( data > 100 ) data = 100; 
     if( misc > 100 ) misc = 100; 
+
+            //********************************************* CURT ADD AUDIO ***********************************************************************************************************
+    // CURT ADD !!!!!!!!!!!!!!!!
+    if(mgmt > 85){
+        wifimon_test_play_sound();
+    }
+    if(data > 85){
+        wifimon_test_play_sound();
+    }
+
+    /**
+     * scan i2c devices
+     */
+    for( uint8_t address = 1; address < 127; address++ ) {
+        Wire.beginTransmission(address);
+        if ( Wire.endTransmission() == 0 )
+            log_i("I2C device at: 0x%02x", address );
+
+    }
+    // ------------------ END CURT ADD ------------------
+
+
+  //  if( mgmt > 100 ) mgmt = 100; 
+   // if( data > 100 ) data = 100; 
+   // if( misc > 100 ) misc = 100; 
     /**
      * add seria data
      */

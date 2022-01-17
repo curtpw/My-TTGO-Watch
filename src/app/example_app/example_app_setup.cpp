@@ -27,11 +27,8 @@
 #include "gui/widget_factory.h"
 #include "gui/widget_styles.h"
 
-#ifdef NATIVE_64BIT
-    #include "utils/logging.h"
-#else
-    #include <Arduino.h>
-#endif
+#include <Arduino.h>
+
 
 lv_obj_t *example_app_setup_tile = NULL;
 lv_obj_t *example_app_foobar_switch = NULL;
@@ -40,6 +37,7 @@ static void exit_example_app_setup_event_cb( lv_obj_t * obj, lv_event_t event );
 static void example_app_foobar_switch_event_cb( lv_obj_t * obj, lv_event_t event );
 
 void example_app_setup_setup( uint32_t tile_num ) {
+    log_i("----------------- CURT -------- example_app_setup_setup");
     /**
      * get tile obj from tile number
      */
@@ -59,6 +57,7 @@ void example_app_setup_setup( uint32_t tile_num ) {
 static void example_app_foobar_switch_event_cb( lv_obj_t * obj, lv_event_t event ) {
     switch( event ) {
         case( LV_EVENT_VALUE_CHANGED ): EXAMPLE_APP_INFO_LOG( "switch value = %d\r\n", lv_switch_get_state( obj ) );
+                                        log_i("----------------- CURT -------- example_app_foobar_switch_event_cb");
                                         break;
     }
 }
@@ -66,6 +65,7 @@ static void example_app_foobar_switch_event_cb( lv_obj_t * obj, lv_event_t event
 static void exit_example_app_setup_event_cb( lv_obj_t * obj, lv_event_t event ) {
     switch( event ) {
         case( LV_EVENT_CLICKED ):       mainbar_jump_back();
+                                        log_i("----------------- CURT -------- exit_example_app_setup_event_cb");
                                         break;
     }
 }

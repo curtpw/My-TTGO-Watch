@@ -7,12 +7,14 @@
 #include "app/calc/calc_app.h"
 #include "app/FindPhone/FindPhone.h"
 #include "app/example_app/example_app.h"
-#include "app/gps_status/gps_status.h"
+//#include "app/examp_audio_app/examp_audio_app.h"   //curt test
+//#include "app/gps_status/gps_status.h"
+#include "app/tiltmouse/tiltmouse_app.h"
 #include "app/kodi_remote/kodi_remote_app.h"
 #include "app/osmand/osmand_app.h"
 #include "app/powermeter/powermeter_app.h"
 #include "app/osmmap/osmmap_app.h"
-#include "app/mail/mail_app.h"
+//#include "app/mail/mail_app.h"
 #include "app/sailing/sailing.h"
 #include "app/stopwatch/stopwatch_app.h"
 #include "app/wifimon/wifimon_app.h"
@@ -55,14 +57,16 @@ void setup() {
     alarm_clock_setup();
     activity_app_setup();
     calendar_app_setup();
-    mail_app_setup();
-    gps_status_setup();
+    tiltmouse_app_setup();
+    //mail_app_setup();
+    //gps_status_setup();
     IRController_setup();
     sailing_setup();
     osmand_app_setup();
     fxrates_app_setup();
     powermeter_app_setup();
     example_app_setup();
+    //examp_audio_app_setup(); //curt test
     FindPhone_setup();
     wifimon_app_setup();
     calc_app_setup();

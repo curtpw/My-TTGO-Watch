@@ -1,7 +1,7 @@
 /****************************************************************************
- *   Sep 29 12:17:11 2021
- *   Copyright  2021  Dirk Brosswick
- *   Email: dirk.brosswick@googlemail.com
+ *   June 04 02:01:00 2021
+ *   Copyright  2021  Dirk Sarodnick
+ *   Email: programmer@dirk-sarodnick.de
  ****************************************************************************/
  
 /*
@@ -19,9 +19,13 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-#ifndef _MAIL_APP_MAIN_H
-    #define _MAIL_APP_MAIN_H
+#ifndef _TILTMOUSE_APP_MAIN_H
+    #define _TILTMOUSE_APP_MAIN_H
 
-    void mail_app_main_setup( uint32_t tile_num );
+    #include <TTGO.h>
 
-#endif // _MAIL_APP_MAIN_H
+    void tiltmouse_app_main_setup( uint32_t tile_num );
+    void tiltmouse_activate();
+    void tiltmouse_deactivate();
+
+#endif // _TILTMOUSE_APP_MAIN_H

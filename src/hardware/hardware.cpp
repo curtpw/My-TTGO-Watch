@@ -59,6 +59,7 @@
         #include <M5Core2.h>
     #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
         #include <TTGO.h>
+        #include <Wire.h> // curt add !!!!!!!!!!!!!!!!!
     #elif defined( LILYGO_WATCH_2021 )    
         #include <twatch2021_config.h>
         #include <Wire.h>
@@ -128,6 +129,7 @@ void hardware_setup( void ) {
              */
             M5.begin();
         #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
+            log_i("----------------- CURT -------- hardware_setup");
             TTGOClass *ttgo = TTGOClass::getWatch();
             /**
              * lvgl init
@@ -137,6 +139,25 @@ void hardware_setup( void ) {
              * ttgo init
              */
             ttgo->begin();
+
+
+            //curt add!!!!!!!!!!!!!!!!!
+                        /**
+             * setup wire interface
+             */
+            Wire.begin( 21, 22, 400000 );
+            /**
+             * scan i2c devices
+             */
+            for( uint8_t address = 1; address < 127; address++ ) {
+                Wire.beginTransmission(address);
+                if ( Wire.endTransmission() == 0 )
+                    log_i("I2C device at: 0x%02x", address );
+
+            }
+            //END CURT ADD !!!!!!!!!!!!!!!!!!!!
+
+
         #elif defined( LILYGO_WATCH_2021 )
             heap_caps_malloc_extmem_enable( 32+1024 );
             /**
@@ -242,6 +263,8 @@ void hardware_setup( void ) {
 }
 
 void hardware_post_setup( void ) {
+
+    log_i("----------------- CURT -------- hardware_post_setup");
 
     if ( wifictl_get_autoon() && ( pmu_is_charging() || pmu_is_vbus_plug() || ( pmu_get_battery_voltage() > 3400) ) ) {
         wifictl_on();

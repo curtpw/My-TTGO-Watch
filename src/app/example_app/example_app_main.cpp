@@ -28,14 +28,14 @@
 #include "gui/mainbar/main_tile/main_tile.h"
 #include "gui/mainbar/mainbar.h"
 #include "gui/statusbar.h"
-#include "gui/sound/piep.h" //CURT
-#include "gui/sound/test_c_mouth.h" //CURT
+//#include "gui/sound/piep.h" //CURT
+//#include "gui/sound/test_c_mouth.h" //CURT
 #include "gui/widget_factory.h"
 #include "gui/widget_styles.h"
 
-#include "hardware/sound.h" //CURT
-#include "hardware/motor.h" //CURT
-#include "hardware/powermgm.h" //CURT
+//#include "hardware/sound.h" //CURT
+//#include "hardware/motor.h" //CURT
+//#include "hardware/powermgm.h" //CURT
 
 
 
@@ -66,10 +66,10 @@ void example_app_main_setup( uint32_t tile_num ) {
     lv_obj_align(setup_btn, example_app_main_tile, LV_ALIGN_IN_BOTTOM_RIGHT, -THEME_ICON_PADDING, -THEME_ICON_PADDING );
 
     // create an task that runs every 5 secounds
-    _example_app_task_5000 = lv_task_create( example_app_task_5000, 1000, LV_TASK_PRIO_MID, NULL );
+//    _example_app_task_5000 = lv_task_create( example_app_task_5000, 5000, LV_TASK_PRIO_MID, NULL );
 
     // create an task that runs every 10 secounds
-    _example_app_task_10000 = lv_task_create( example_app_task_10000, 1000, LV_TASK_PRIO_MID, NULL );
+    _example_app_task_10000 = lv_task_create( example_app_task_10000, 10000, LV_TASK_PRIO_MID, NULL );
 }
 
 static void enter_example_app_setup_event_cb( lv_obj_t * obj, lv_event_t event ) {
@@ -93,11 +93,12 @@ static void exit_example_app_main_event_cb( lv_obj_t * obj, lv_event_t event ) {
 static void example_app_play_sound_task( lv_task_t * task )
 {
     log_i("----------------- CURT -------- example_app_play_sound_task");
-    sound_play_progmem_wav( test_c_mouth_wav, test_c_mouth_wav_len ); 
+  //  sound_play_progmem_wav( test_c_mouth_wav, test_c_mouth_wav_len ); 
     //sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
     //motor_vibe(100); 
 }
 
+/*
 void example_app_task_5000( lv_task_t * task ) {
     log_i("----------------- CURT -------- example_app_task_5000");
     // put your code her
@@ -107,9 +108,10 @@ void example_app_task_5000( lv_task_t * task ) {
         _example_app_play_sound_task = nullptr;
     }     
 }
+*/
 
 void example_app_task_10000( lv_task_t * task ) {
     log_i("----------------- CURT -------- example_app_task_10000");
-    _example_app_play_sound_task = lv_task_create( example_app_play_sound_task, 3000, LV_TASK_PRIO_MID, NULL ); //play sound
+  //  _example_app_play_sound_task = lv_task_create( example_app_play_sound_task, 3000, LV_TASK_PRIO_MID, NULL ); //play sound
     // put your code her
 }

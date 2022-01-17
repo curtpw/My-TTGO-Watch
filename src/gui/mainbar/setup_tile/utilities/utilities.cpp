@@ -21,7 +21,7 @@
  */
 #include "config.h"
 #include "utilities.h"
-#include "gps_test_data.h"
+//#include "gps_test_data.h"
 
 #include "gui/mainbar/mainbar.h"
 #include "gui/mainbar/setup_tile/setup_tile.h"
@@ -32,7 +32,7 @@
 
 #include "hardware/motor.h"
 #include "hardware/display.h"
-#include "hardware/gpsctl.h"
+//#include "hardware/gpsctl.h"
 
 #ifdef NATIVE_64BIT
     #include "utils/logging.h"
@@ -322,7 +322,7 @@ void gps_test_data_task( lv_task_t * task ) {
         }
         else {
             if( !gps_data )
-                gps_data = (uint8_t*)gps_test_data_csv;
+         //       gps_data = (uint8_t*)gps_test_data_csv;
             task_is_running = true;
             lv_label_set_text( gps_test_data_btn_label, "stop GPS\ntest data");
         }        
@@ -333,6 +333,7 @@ void gps_test_data_task( lv_task_t * task ) {
      */
     if ( task_is_running ) {
         if ( gps_data ) {
+            /*
             uint8_t line[64]="";
             uint8_t *line_p = line;
             double lat = 0;
@@ -341,31 +342,31 @@ void gps_test_data_task( lv_task_t * task ) {
             /**
              * read line
              */
-            while( *gps_data != '\r' && *gps_data != '\n' && *gps_data != '\0' ) {
-                *line_p = *gps_data;
-                line_p++;
-                gps_data++;
-            }
+          //  while( *gps_data != '\r' && *gps_data != '\n' && *gps_data != '\0' ) {
+           //     *line_p = *gps_data;
+            //    line_p++;
+          //      gps_data++;
+          //  }
             /**
              * check abort condition, restart
              */
-            if ( *gps_data == '\0' ) {
-                gps_data = (uint8_t*)gps_test_data_csv;
-            }
-            else {
-                gps_data++;
-            }
-            *line_p = '\0';
+          //  if ( *gps_data == '\0' ) {
+          //      gps_data = (uint8_t*)gps_test_data_csv;
+           // }
+           // else {
+          //      gps_data++;
+         //   }
+        //    *line_p = '\0'; 
             /**
              * pharse string
              */
-            if( strlen( (const char*)line ) > 10 ) {
+       /*     if( strlen( (const char*)line ) > 10 ) {
                 lon = atof( (const char*)line );
                 lat = atof( (const char*)strchr( (const char*)line, ',' ) + 1 );
                 altitude = atof( (const char*)(const char*)strrchr( (const char*)line, ',' ) + 1 );
                 gpsctl_set_location( lat, lon, altitude, GPS_SOURCE_FAKE, false );
                 log_d("gps-data: %s (%f,%f,%f)", line, lon, lat, altitude );
-            }
+            } */
         }
     }
 }

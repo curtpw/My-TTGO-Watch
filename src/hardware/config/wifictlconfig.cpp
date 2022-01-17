@@ -23,19 +23,19 @@
 #include "config.h"
 #include "wifictlconfig.h"
 #include "utils/alloc.h"
-#include "utils/webserver/webserver.h"
-#include "utils/ftpserver/ftpserver.h"
+//#include "utils/webserver/webserver.h"
+//#include "utils/ftpserver/ftpserver.h"
 
 #ifdef NATIVE_64BIT
     #include "utils/logging.h"
 #endif
 
-wifictl_config_t::wifictl_config_t() : BaseJsonConfig( WIFICTL_JSON_CONFIG_FILE ) {}
+//wifictl_config_t::wifictl_config_t() : BaseJsonConfig( WIFICTL_JSON_CONFIG_FILE ) {}
 
 bool wifictl_config_t::onSave(JsonDocument& doc) {
     /*
      * save config structure into json file
-     */
+     */    /*
     doc["autoon"] = autoon;
     doc["hostname"] = hostname;
     doc["webserver"] = webserver;
@@ -48,14 +48,14 @@ bool wifictl_config_t::onSave(JsonDocument& doc) {
         doc["networklist"][ i ]["ssid"] = networklist[ i ].ssid;
         doc["networklist"][ i ]["psk"] = networklist[ i ].password;
     }
-
+     */   
     return true;
 }
 
 bool wifictl_config_t::onLoad(JsonDocument& doc) {
     /*
      * allocate networklist if needed
-     */
+     */ /*
     if ( networklist == NULL ) {
         networklist = ( wifictl_networklist* )CALLOC( sizeof( wifictl_networklist ) * NETWORKLIST_ENTRYS, 1 );
         if( !networklist ) {
@@ -72,14 +72,14 @@ bool wifictl_config_t::onLoad(JsonDocument& doc) {
     }
     /*
      * clean networklist
-     */
+     */ /*
     for ( int entry = 0 ; entry < NETWORKLIST_ENTRYS ; entry++ ) {
       networklist[ entry ].ssid[ 0 ] = '\0';
       networklist[ entry ].password[ 0 ] = '\0';
     }
     /*
      * read values from json
-     */
+     */ /*
     autoon = doc["autoon"] | true;
     enable_on_standby = doc["enable_on_standby"] | false;
     if ( doc["hostname"] ) {
@@ -107,14 +107,14 @@ bool wifictl_config_t::onLoad(JsonDocument& doc) {
             strncpy( networklist[ i ].password, doc["networklist"][ i ]["psk"], sizeof( networklist[ i ].password ) );
         }
     }
-
+*/ 
     return true;
 }
 
 bool wifictl_config_t::onDefault( void ) {
     /*
      * allocate networklist if needed
-     */
+     */    /*
     if ( networklist == NULL ) {
         networklist = ( wifictl_networklist* )CALLOC( sizeof( wifictl_networklist ) * NETWORKLIST_ENTRYS, 1 );
         if( !networklist ) {
@@ -124,7 +124,7 @@ bool wifictl_config_t::onDefault( void ) {
     }
     /*
      * clean networklist
-     */
+     */    /*
     for ( int entry = 0 ; entry < NETWORKLIST_ENTRYS ; entry++ ) {
       networklist[ entry ].ssid[ 0 ] = '\0';
       networklist[ entry ].password[ 0 ] = '\0';
@@ -132,7 +132,7 @@ bool wifictl_config_t::onDefault( void ) {
 
     /*
      * read values from json
-     */
+     */    /*
     autoon = true;
     enable_on_standby = false;
 
@@ -140,6 +140,6 @@ bool wifictl_config_t::onDefault( void ) {
     ftpserver = false;
     strncpy( ftpuser, FTPSERVER_USER, sizeof( ftpuser ) );
     strncpy( ftppass, FTPSERVER_PASSWORD, sizeof( ftppass ) );
-
+*/ 
     return( true );
 }

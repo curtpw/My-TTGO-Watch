@@ -36,8 +36,8 @@
 #include "gui/app.h"
 #include "gui/widget.h"
 #include "gui/widget_styles.h"
-#include "gui/mainbar/setup_tile/bluetooth_settings/bluetooth_message.h"
-#include "hardware/blectl.h"
+//#include "gui/mainbar/setup_tile/bluetooth_settings/bluetooth_message.h"
+//#include "hardware/blectl.h"
 #include "hardware/rtcctl.h"
 #include "hardware/powermgm.h"
 #include "hardware/display.h"
@@ -47,15 +47,7 @@
 #include "hardware/wifictl.h"
 #include "utils/filepath_convert.h"
 
-#ifdef NATIVE_64BIT
-    #include <iostream>
-    #include <fstream>
-    #include <string.h>
-    #include <unistd.h>
-    #include <sys/types.h>
-    #include <pwd.h>
-    #include "utils/logging.h"
-#else
+
     #include <WiFi.h>
     #include <Arduino.h>
 
@@ -64,7 +56,7 @@
     #endif
 
     #include "utils/decompress/decompress.h"
-#endif
+
 
 /**
  * watchface task and states
@@ -137,6 +129,7 @@ void watchface_app_label_update( tm &info );
 void watchface_app_image_update( tm &info );
 
 void watchface_tile_setup( void ) {
+      log_i("***** watchface_tile_setup");
     watchface_app_tile_num = mainbar_add_app_tile( 1, 1, "WatchFace Tile" );
     watchface_app_tile = mainbar_get_tile_obj( watchface_app_tile_num );
 
@@ -162,8 +155,13 @@ void watchface_tile_setup( void ) {
     /**
      * alloc default dial
      */
+      log_i("***** watchface_dial_img = lv_img_create( watchface_cont, NULL );");
     watchface_dial_img = lv_img_create( watchface_cont, NULL );
+
+     log_i("***** lv_img_set_src( watchface_dial_img, &swiss_dial_240px );");
     lv_img_set_src( watchface_dial_img, &swiss_dial_240px );
+
+     log_i("*****  lv_obj_align( watchface_dial_img, watchface_cont, LV_ALIGN_CENTER, watchface_theme_confi");
     lv_obj_align( watchface_dial_img, watchface_cont, LV_ALIGN_CENTER, watchface_theme_config.dial.dial.x_offset, watchface_theme_config.dial.dial.y_offset );
     /**
      * alloc labels and set to defauts
@@ -203,6 +201,8 @@ void watchface_tile_setup( void ) {
     /**
      * alloc image and set to defauts
      */
+
+    log_i("*****  for( int i = 0 ; i < WATCHFACE_IMAGE_NUM ; i++ ) {");
     for( int i = 0 ; i < WATCHFACE_IMAGE_NUM ; i++ ) {
         /**
          * alloc and setup image container
@@ -271,6 +271,7 @@ void watchface_tile_setup( void ) {
     /**
      * setup powermgm and touch callback function
      */
+     log_i("*****     powermgm_register_cb( POWERMGM_STANDBY, watchface_powermgm_event_cb, watchface powermgm );");
     powermgm_register_cb( POWERMGM_STANDBY, watchface_powermgm_event_cb, "watchface powermgm" );
     /**
      * setup watchface background task
@@ -283,6 +284,7 @@ void watchface_tile_setup( void ) {
 }
 
 void watchface_tile_set_antialias( bool enable ) {
+      log_i("***** watchface_tile_set_antialias");
     lv_img_set_antialias( watchface_hour_s_img, enable );
     lv_img_set_antialias( watchface_min_s_img, enable );
     lv_img_set_antialias( watchface_sec_s_img, enable );
@@ -292,6 +294,7 @@ void watchface_tile_set_antialias( bool enable ) {
 }
 
 void watchface_decompress_theme( void ) {
+      log_i("*****  watchface_decompress_theme");
     FILE* file;
     char filename[256] ="";
 
@@ -318,6 +321,7 @@ void watchface_decompress_theme( void ) {
 }
 
 void watchface_default_theme( void ) {    
+     log_i("***** watchface_default_theme");
     watchface_setup_set_info_label( "clear watchface theme, wait ..." );
     watchface_remove_theme_files();
     watchface_reload_theme();
@@ -359,6 +363,7 @@ static void exit_watchface_app_tile_event_cb( lv_obj_t * obj, lv_event_t event )
 }
 
 void watchface_reload_theme( void ) {
+     log_i("*****   watchface_reload_theme");
     /**
      * reload theme config
      */
@@ -814,8 +819,8 @@ void watchface_avtivate_cb( void ) {
     /**
      * save block show messages state
      */
-    watchface_tile_block_show_messages = blectl_get_show_notification();
-    blectl_set_show_notification( false );
+  //  watchface_tile_block_show_messages = blectl_get_show_notification();
+  //  blectl_set_show_notification( false );
     /**
      * hide statusbar
      */
@@ -828,7 +833,7 @@ void watchface_avtivate_cb( void ) {
 
 void watchface_hibernate_cb( void ) {
     watchface_active = false;
-    blectl_set_show_notification( watchface_tile_block_show_messages );
+//    blectl_set_show_notification( watchface_tile_block_show_messages );
     powermgm_set_normal_mode();
 }
 
@@ -868,6 +873,7 @@ void watchface_app_tile_update( void ) {
 }
 
 void watchface_app_image_update( tm &info ) {
+        log_i("*****   watchface_app_image_update");
     for( int i = 0 ; i < WATCHFACE_IMAGE_NUM ; i++ ) {
         /**
          * check if label enabled
@@ -938,6 +944,7 @@ void watchface_app_image_update( tm &info ) {
 }
 
 void watchface_app_label_update( tm &info ) {
+       log_i("*****   watchface_app_label_update");
     for( int i = 0 ; i < WATCHFACE_LABEL_NUM ; i++ ) {
         char temp_str[ 64 ] = "";
         /**
@@ -959,9 +966,9 @@ void watchface_app_label_update( tm &info ) {
             else if ( !strcmp( "battery_voltage", watchface_theme_config.dial.label[ i ].type ) ) {
                 snprintf( temp_str, sizeof( temp_str ), watchface_theme_config.dial.label[ i ].label, pmu_get_battery_voltage() / 1000 );
             }
-            else if ( !strcmp( "bluetooth_messages", watchface_theme_config.dial.label[ i ].type ) ) {
-                snprintf( temp_str, sizeof( temp_str ), watchface_theme_config.dial.label[ i ].label, bluetooth_get_number_of_msg() );
-            }
+          //  else if ( !strcmp( "bluetooth_messages", watchface_theme_config.dial.label[ i ].type ) ) {
+          //      snprintf( temp_str, sizeof( temp_str ), watchface_theme_config.dial.label[ i ].label, bluetooth_get_number_of_msg() );
+          //  }
             else if ( !strcmp( "steps", watchface_theme_config.dial.label[ i ].type ) ) {
                 snprintf( temp_str, sizeof( temp_str ), watchface_theme_config.dial.label[ i ].label, bma_get_stepcounter() );
             }

@@ -30,7 +30,7 @@
     #include "utils/logging.h"
 #else  
     #include "wifictl.h"
-    #include "blectl.h"
+    //#include "blectl.h"
     #include "rtcctl.h"
 
     EventGroupHandle_t time_event_handle = NULL;
@@ -43,7 +43,7 @@ callback_t *timesync_callback = NULL;
 void timesync_Task( void * pvParameters );
 bool timesync_powermgm_event_cb( EventBits_t event, void *arg );
 bool timesync_wifictl_event_cb( EventBits_t event, void *arg );
-bool timesync_blectl_event_cb( EventBits_t event, void *arg );
+//bool timesync_blectl_event_cb( EventBits_t event, void *arg );
 bool timesync_send_event_cb( EventBits_t event, void *arg );
 
 void timesync_setup( void ) {
@@ -59,8 +59,8 @@ void timesync_setup( void ) {
         /*
         * register wigi, ble and powermgm callback function
         */
-        wifictl_register_cb( WIFICTL_CONNECT, timesync_wifictl_event_cb, "wifictl timesync" );
-        blectl_register_cb( BLECTL_MSG, timesync_blectl_event_cb, "blectl timesync" );
+     //   wifictl_register_cb( WIFICTL_CONNECT, timesync_wifictl_event_cb, "wifictl timesync" );
+       // blectl_register_cb( BLECTL_MSG, timesync_blectl_event_cb, "blectl timesync" );
     #endif
     powermgm_register_cb( POWERMGM_SILENCE_WAKEUP | POWERMGM_STANDBY | POWERMGM_WAKEUP, timesync_powermgm_event_cb, "powermgm timesync" );
     /*
@@ -131,39 +131,10 @@ bool timesync_powermgm_event_cb( EventBits_t event, void *arg ) {
 }
 
 bool timesync_wifictl_event_cb( EventBits_t event, void *arg ) {
-#ifndef NATIVE_64BIT
-    switch ( event ) {
-        case WIFICTL_CONNECT:
-            /*
-             * sync time when autosync is enabled
-             */ 
-            if ( timesync_config.timesync ) {
-                /*
-                 * check if another sync request is running
-                 */
-                if ( xEventGroupGetBits( time_event_handle ) & TIME_SYNC_REQUEST ) {
-                    break;
-                }
-                else {
-                    /*
-                     * start timesync task
-                     */
-                    xEventGroupSetBits( time_event_handle, TIME_SYNC_REQUEST );
-                    xTaskCreate(    timesync_Task,      /* Function to implement the task */
-                                    "timesync Task",    /* Name of the task */
-                                    2000,              /* Stack size in words */
-                                    NULL,               /* Task input parameter */
-                                    1,                  /* Priority of the task */
-                                    &_timesync_Task );  /* Task handle. */
-                }
-            }
-            break;
 
-    }
-#endif
     return( true );
 }
-
+/*
 bool timesync_blectl_event_cb( EventBits_t event, void *arg ) {
     char *settime_str = NULL;
     time_t now;
@@ -192,7 +163,7 @@ bool timesync_blectl_event_cb( EventBits_t event, void *arg ) {
 
     return( true );
 }
-
+*/
 void timesync_save_config( void ) {
     timesync_config.save();
 }

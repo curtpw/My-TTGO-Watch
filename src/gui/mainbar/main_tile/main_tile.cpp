@@ -40,11 +40,9 @@
 
 #include "utils/alloc.h"
 
-#ifdef NATIVE_64BIT
-    #include "utils/logging.h"
-#else
+
     #include <Arduino.h>
-#endif
+
 
 static bool maintile_init = false;
 
@@ -72,19 +70,13 @@ LV_FONT_DECLARE(Ubuntu_48px);
 LV_FONT_DECLARE(Ubuntu_32px);
 LV_FONT_DECLARE(Ubuntu_16px);
 
-#if defined( M5PAPER )
-    lv_font_t *time_font = &Ubuntu_144px;
-    lv_font_t *date_font = &Ubuntu_48px;
-    lv_font_t *info_font = &Ubuntu_32px;
-    lv_font_t *temp_font = &Ubuntu_32px;
-    lv_font_t *icon_font = &Ubuntu_16px;
-#else
+
     lv_font_t *time_font = &Ubuntu_72px;
     lv_font_t *date_font = &Ubuntu_16px;
     lv_font_t *info_font = &Ubuntu_16px;    
     lv_font_t *temp_font = &Ubuntu_16px;    
     lv_font_t *icon_font = &Ubuntu_16px;
-#endif
+
 
 lv_task_t * main_tile_task;
 

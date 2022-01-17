@@ -27,12 +27,8 @@
 #include "gui/statusbar.h"
 #include "gui/app.h"
 
-#ifdef NATIVE_64BIT
-    #include "utils/logging.h"
-    #include "utils/millis.h"
-#else
-    #include <Arduino.h>
-#endif
+//core
+#include <Arduino.h>
 
 uint32_t wifimon_app_main_tile_num;
 uint32_t wifimon_app_setup_tile_num;

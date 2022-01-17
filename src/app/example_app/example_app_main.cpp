@@ -66,10 +66,10 @@ void example_app_main_setup( uint32_t tile_num ) {
     lv_obj_align(setup_btn, example_app_main_tile, LV_ALIGN_IN_BOTTOM_RIGHT, -THEME_ICON_PADDING, -THEME_ICON_PADDING );
 
     // create an task that runs every 5 secounds
-    _example_app_task_5000 = lv_task_create( example_app_task_5000, 1000, LV_TASK_PRIO_MID, NULL );
+//    _example_app_task_5000 = lv_task_create( example_app_task_5000, 5000, LV_TASK_PRIO_MID, NULL );
 
     // create an task that runs every 10 secounds
-    _example_app_task_10000 = lv_task_create( example_app_task_10000, 1000, LV_TASK_PRIO_MID, NULL );
+    _example_app_task_10000 = lv_task_create( example_app_task_10000, 10000, LV_TASK_PRIO_MID, NULL );
 }
 
 static void enter_example_app_setup_event_cb( lv_obj_t * obj, lv_event_t event ) {
@@ -98,6 +98,7 @@ static void example_app_play_sound_task( lv_task_t * task )
     //motor_vibe(100); 
 }
 
+/*
 void example_app_task_5000( lv_task_t * task ) {
     log_i("----------------- CURT -------- example_app_task_5000");
     // put your code her
@@ -107,9 +108,10 @@ void example_app_task_5000( lv_task_t * task ) {
         _example_app_play_sound_task = nullptr;
     }     
 }
+*/
 
 void example_app_task_10000( lv_task_t * task ) {
     log_i("----------------- CURT -------- example_app_task_10000");
-    _example_app_play_sound_task = lv_task_create( example_app_play_sound_task, 3000, LV_TASK_PRIO_MID, NULL ); //play sound
+  //  _example_app_play_sound_task = lv_task_create( example_app_play_sound_task, 3000, LV_TASK_PRIO_MID, NULL ); //play sound
     // put your code her
 }

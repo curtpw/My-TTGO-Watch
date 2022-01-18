@@ -34,9 +34,9 @@
 #include "gui/widget_styles.h"
 #include "gui/widget_factory.h"
 
-#include "hardware/sound.h"
-#include "gui/sound/piep.h"
-#include "gui/sound/test_c_mouth.h"
+//#include "hardware/sound.h"
+//#include "gui/sound/piep.h"
+//#include "gui/sound/test_c_mouth.h"
 #include "hardware/motor.h"
 #include "hardware/powermgm.h"
 //#include "app/alarm_clock/alarm_in_progress.h"
@@ -1577,16 +1577,16 @@ static void wifimon_channel_select_event_handler( lv_obj_t * obj, lv_event_t eve
 
  //curt add
 static void Play_Target_Sound_task( lv_task_t * task ){   //curt add
-        sound_set_enabled_config( true );
-    sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
-    sound_play_progmem_wav( piep_wav, piep_wav_len ); 
+   //     sound_set_enabled_config( true );
+  //  sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
+  //  sound_play_progmem_wav( piep_wav, piep_wav_len ); 
     motor_vibe(100); 
 }
 
 static void wifimon_test_play_sound( void ) {
-        sound_set_enabled_config( true );
-    sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
-    sound_play_progmem_wav(test_c_mouth_wav, test_c_mouth_wav_len);
+  //      sound_set_enabled_config( true );
+ //   sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
+ //   sound_play_progmem_wav(test_c_mouth_wav, test_c_mouth_wav_len);
 }
 
 

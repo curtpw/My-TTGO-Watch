@@ -9,7 +9,7 @@
 #include "display.h"
 //#include "gpsctl.h"
 #include "timesync.h"
-#include "sound.h"
+//#include "sound.h"
 #include "motor.h"
 #include "pmu.h"
 #include "rtcctl.h"
@@ -244,7 +244,7 @@ void hardware_setup( void ) {
     rtcctl_setup();
     timesync_setup();
     sensor_setup();
-    sound_read_config();
+ //   sound_read_config();
 //    fakegps_setup();
 //    blectl_read_config();
 
@@ -272,7 +272,7 @@ void hardware_post_setup( void ) {
       //  wifictl_on();
     }
 
-    sound_setup();
+   // sound_setup();
   //  gpsctl_setup();
     powermgm_set_event( POWERMGM_WAKEUP );
 

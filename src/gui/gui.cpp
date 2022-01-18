@@ -38,7 +38,7 @@
 //#include "mainbar/setup_tile/gps_settings/gps_settings.h"
 #include "mainbar/setup_tile/move_settings/move_settings.h"
 #include "mainbar/setup_tile/battery_settings/battery_settings.h"
-#include "mainbar/setup_tile/sound_settings/sound_settings.h"
+//#include "mainbar/setup_tile/sound_settings/sound_settings.h"
 //#include "mainbar/setup_tile/sdcard_settings/sdcard_settings.h"
 #include "mainbar/setup_tile/utilities/utilities.h"
 //#include "mainbar/setup_tile/bluetooth_settings/bluetooth_settings.h"
@@ -123,7 +123,7 @@ void gui_setup( void ) {
     time_settings_tile_setup();
     //gps_settings_tile_setup();
     utilities_tile_setup();
-    sound_settings_tile_setup();
+   // sound_settings_tile_setup();
     #ifndef NO_UPDATES
     //    update_tile_setup();
     #endif

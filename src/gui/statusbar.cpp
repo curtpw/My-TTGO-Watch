@@ -35,7 +35,7 @@
 #include "hardware/rtcctl.h"
 #include "hardware/motion.h"
 #include "hardware/pmu.h"
-#include "hardware/sound.h"
+//#include "hardware/sound.h"
 #include "hardware/display.h"
 //#include "hardware/gpsctl.h"
 
@@ -103,13 +103,13 @@ bool should_save_sound_config = false;
 void statusbar_event( lv_obj_t * statusbar, lv_event_t event );
 //void statusbar_wifi_event_cb( lv_obj_t *wifi, lv_event_t event );
 //void statusbar_bluetooth_event_cb( lv_obj_t *bluetooth, lv_event_t event );
-void statusbar_volume_slider_event_handler_cb( lv_obj_t *sound_slider, lv_event_t event );
+//void statusbar_volume_slider_event_handler_cb( lv_obj_t *sound_slider, lv_event_t event );
 //bool statusbar_gpsctl_event_cb( EventBits_t event, void *arg );
-void statusbar_sound_event_cb( lv_obj_t *sound, lv_event_t event );
+//void statusbar_sound_event_cb( lv_obj_t *sound, lv_event_t event );
 void statusbar_display_event_cb( lv_obj_t *display, lv_event_t event );
 void statusbar_brightness_slider_event_handler_cb( lv_obj_t *brightness_slider, lv_event_t event );
 
-bool statusbar_soundctl_event_cb( EventBits_t event, void *arg );
+//bool statusbar_soundctl_event_cb( EventBits_t event, void *arg );
 //bool statusbar_blectl_event_cb( EventBits_t event, void *arg );
 //bool statusbar_wifictl_event_cb( EventBits_t event, void *arg );
 bool statusbar_rtcctl_event_cb( EventBits_t event, void *arg );
@@ -277,10 +277,10 @@ void statusbar_setup( void )
     lv_obj_add_style( statusbar_volume_slider, LV_SLIDER_PART_INDIC, ws_get_slider_style() );
     lv_obj_add_style( statusbar_volume_slider, LV_SLIDER_PART_KNOB, ws_get_slider_style() );
     lv_slider_set_range( statusbar_volume_slider, 0, 100 );
-    lv_obj_set_event_cb( statusbar_volume_slider, statusbar_volume_slider_event_handler_cb ) ;
+ //   lv_obj_set_event_cb( statusbar_volume_slider, statusbar_volume_slider_event_handler_cb ) ;
     statusbar_sound_icon = lv_img_create( statusbar_volume_cont, NULL );
     lv_obj_set_click( statusbar_sound_icon, true );
-    lv_obj_set_event_cb( statusbar_sound_icon, statusbar_sound_event_cb );
+  //  lv_obj_set_event_cb( statusbar_sound_icon, statusbar_sound_event_cb );
     lv_img_set_src( statusbar_sound_icon, &sound_32px );
     lv_obj_align( statusbar_sound_icon, statusbar_volume_cont, LV_ALIGN_IN_LEFT_MID, 15, 0 );
 
@@ -303,7 +303,7 @@ void statusbar_setup( void )
     lv_obj_align( statusbar_brightness_icon, statusbar_brightness_cont, LV_ALIGN_IN_LEFT_MID, 15, 0 );
 
     lv_slider_set_value( statusbar_brightness_slider, display_get_brightness(), LV_ANIM_OFF );
-    lv_slider_set_value( statusbar_volume_slider, sound_get_volume_config(), LV_ANIM_OFF );
+   // lv_slider_set_value( statusbar_volume_slider, sound_get_volume_config(), LV_ANIM_OFF );
 
     /*
      * init fin
@@ -337,12 +337,12 @@ void statusbar_setup( void )
 
     statusbar_task = lv_task_create( statusbar_update_task, 250, LV_TASK_PRIO_MID, NULL );
 
-    if( sound_get_available() ) {
-        sound_register_cb( SOUNDCTL_ENABLED | SOUNDCTL_VOLUME, statusbar_soundctl_event_cb, "statusbar sound");
-    }
-    else {
+  //  if( sound_get_available() ) {
+  //      sound_register_cb( SOUNDCTL_ENABLED | SOUNDCTL_VOLUME, statusbar_soundctl_event_cb, "statusbar sound");
+  //  }
+   // else {
         lv_obj_set_hidden( statusbar_volume_cont, true );
-    }
+   // }
 }
 
 void statusbar_update_task( lv_task_t * task ) {
@@ -410,11 +410,11 @@ bool statusbar_style_event_cb( EventBits_t event, void *arg ) {
 }
 */
 
-bool statusbar_soundctl_event_cb( EventBits_t event, void *arg ) {
+//bool statusbar_soundctl_event_cb( EventBits_t event, void *arg ) {
     /*
      * check if statusbar ready
      */
-    if ( !statusbar_init ) {
+ /*   if ( !statusbar_init ) {
         log_e("statusbar not initialized");
         return( true );
     }
@@ -436,7 +436,7 @@ bool statusbar_soundctl_event_cb( EventBits_t event, void *arg ) {
             break;
     }
     return( true );
-}
+} */
 
 bool statusbar_displayctl_event_cb( EventBits_t event, void *arg ) {
     /*
@@ -635,11 +635,12 @@ bool statusbar_rtcctl_event_cb( EventBits_t event, void *arg ) {
     return( true );
 } */
 
-void statusbar_volume_slider_event_handler_cb(lv_obj_t *volume_slider, lv_event_t event) {
+
+//void statusbar_volume_slider_event_handler_cb(lv_obj_t *volume_slider, lv_event_t event) {
     /*
      * check if statusbar ready
      */
-    if ( !statusbar_init ) {
+ /*   if ( !statusbar_init ) {
         log_e("statusbar not initialized");
         return;
     }
@@ -658,6 +659,7 @@ void statusbar_volume_slider_event_handler_cb(lv_obj_t *volume_slider, lv_event_
         should_save_sound_config = true;
     }
 }
+*/
 
 void statusbar_brightness_slider_event_handler_cb(lv_obj_t *brightness_slider, lv_event_t event) {
     /*
@@ -694,11 +696,13 @@ void statusbar_display_event_cb( lv_obj_t *display, lv_event_t event ){
     statusbar_refresh_update = true;
 }
 
-void statusbar_sound_event_cb( lv_obj_t *sound, lv_event_t event ) {
+
+
+//void statusbar_sound_event_cb( lv_obj_t *sound, lv_event_t event ) {
     /*
      * check if statusbar ready
      */
-    if ( !statusbar_init ) {
+ /*   if ( !statusbar_init ) {
         log_e("statusbar not initialized");
         return;
     }
@@ -722,7 +726,7 @@ void statusbar_sound_event_cb( lv_obj_t *sound, lv_event_t event ) {
             break;
     }
     statusbar_refresh_update = true;
-}
+} */
 
 //void statusbar_wifi_event_cb( lv_obj_t *wifi, lv_event_t event ) {
     /*
@@ -1030,10 +1034,10 @@ void statusbar_expand( bool expand ) {
             display_save_config();
             should_save_brightness_config = false;
         }
-        if( should_save_sound_config ){
-            sound_save_config();
+       // if( should_save_sound_config ){
+        //    sound_save_config();
             should_save_sound_config = false;
-        }
+      //  }
     }
     statusbar_refresh_update = true;
 }

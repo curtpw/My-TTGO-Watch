@@ -28,12 +28,12 @@
 #include "gui/mainbar/main_tile/main_tile.h"
 #include "gui/mainbar/mainbar.h"
 #include "gui/statusbar.h"
-#include "gui/sound/piep.h" //CURT
-#include "gui/sound/test_c_mouth.h" //CURT
+//#include "gui/sound/piep.h" //CURT
+//#include "gui/sound/test_c_mouth.h" //CURT
 #include "gui/widget_factory.h"
 #include "gui/widget_styles.h"
 
-#include "hardware/sound.h" //CURT
+//#include "hardware/sound.h" //CURT
 #include "hardware/motor.h" //CURT
 #include "hardware/powermgm.h" //CURT
 
@@ -93,7 +93,7 @@ static void exit_example_app_main_event_cb( lv_obj_t * obj, lv_event_t event ) {
 static void example_app_play_sound_task( lv_task_t * task )
 {
     log_i("----------------- CURT -------- example_app_play_sound_task");
-    sound_play_progmem_wav( test_c_mouth_wav, test_c_mouth_wav_len ); 
+  //  sound_play_progmem_wav( test_c_mouth_wav, test_c_mouth_wav_len ); 
     //sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
     //motor_vibe(100); 
 }

@@ -31,7 +31,7 @@
 //#include "hardware/wifictl.h"
 //#include "hardware/blectl.h"
 #include "hardware/rtcctl.h"
-#include "hardware/sound.h"
+//#include "hardware/sound.h"
 //#include "gui/mainbar/setup_tile/bluetooth_settings/bluetooth_message.h"
 #include "time.h"
 
@@ -40,8 +40,8 @@ static double time_min;
 static double time_sec;
 
 // Sound
-static double sound_volume = 0.;
-static double sound_enabled = 0.;
+//static double sound_volume = 0.;
+//static double sound_enabled = 0.;
 
 // Wifi
 //static double wifi = 0; // disabled=0, enabled+disconnected=1, enabled+connected=2
@@ -79,8 +79,8 @@ extern "C" {
 te_variable watchface_expr_vars[] = {
    // {"gps", &gps},
    // {"ble", &ble},
-    {"sound_volume", &sound_volume},
-    {"sound_enabled", &sound_enabled},
+   // {"sound_volume", &sound_volume},
+  //  {"sound_enabled", &sound_enabled},
     {"alarm", &alarm_state},
   //  {"wifi", &wifi},
     {"battery_percent", (const void*)get_battery_percent, TE_FUNCTION0},
@@ -125,7 +125,7 @@ bool watchface_expr_gpsctl_event_cb( EventBits_t event, void *arg ) {
     return( true );
 }
 */
-
+/*
 bool watchface_expr_soundctl_event_cb( EventBits_t event, void *arg ) {
     switch( event ) {
         case SOUNDCTL_ENABLED:
@@ -137,6 +137,7 @@ bool watchface_expr_soundctl_event_cb( EventBits_t event, void *arg ) {
     }
     return( true );
 }
+*/
 
 bool watchface_expr_rtcctl_event_cb( EventBits_t event, void *arg ) {
     switch( event ) {
@@ -197,6 +198,6 @@ void watchface_expr_setup( void ) {
  //   blectl_register_cb( BLECTL_CONNECT | BLECTL_DISCONNECT | BLECTL_ON | BLECTL_OFF, watchface_expr_blectl_event_cb, "bluetooth state" );
  //   wifictl_register_cb( WIFICTL_CONNECT | WIFICTL_DISCONNECT | WIFICTL_OFF | WIFICTL_ON, watchface_expr_wifictl_event_cb, "wifi state" );
     rtcctl_register_cb( RTCCTL_ALARM_ENABLED | RTCCTL_ALARM_DISABLED, watchface_expr_rtcctl_event_cb, "rtc state" );
-    sound_register_cb( SOUNDCTL_ENABLED | SOUNDCTL_VOLUME, watchface_expr_soundctl_event_cb, "sound state");
+  //  sound_register_cb( SOUNDCTL_ENABLED | SOUNDCTL_VOLUME, watchface_expr_soundctl_event_cb, "sound state");
   //  gpsctl_register_cb( GPSCTL_DISABLE | GPSCTL_ENABLE | GPSCTL_FIX | GPSCTL_NOFIX, watchface_expr_gpsctl_event_cb, "gps state" );
 }

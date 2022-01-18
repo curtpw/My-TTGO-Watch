@@ -145,7 +145,9 @@ void hardware_setup( void ) {
                         /**
              * setup wire interface
              */
-            Wire.begin( 21, 22, 400000 );
+            log_i("----------------- CURT -------- set I2C speed to 1MBPS");
+           // Wire.begin( 21, 22, 400000 );
+            Wire.begin( 21, 22, 1000000 );
             /**
              * scan i2c devices
              */

@@ -35,18 +35,18 @@
 #include "mainbar/note_tile/note_tile.h"
 #include "mainbar/setup_tile/setup_tile.h"
 #include "mainbar/setup_tile/display_settings/display_settings.h"
-#include "mainbar/setup_tile/gps_settings/gps_settings.h"
+//#include "mainbar/setup_tile/gps_settings/gps_settings.h"
 #include "mainbar/setup_tile/move_settings/move_settings.h"
 #include "mainbar/setup_tile/battery_settings/battery_settings.h"
 #include "mainbar/setup_tile/sound_settings/sound_settings.h"
-#include "mainbar/setup_tile/sdcard_settings/sdcard_settings.h"
+//#include "mainbar/setup_tile/sdcard_settings/sdcard_settings.h"
 #include "mainbar/setup_tile/utilities/utilities.h"
-#include "mainbar/setup_tile/bluetooth_settings/bluetooth_settings.h"
-#include "mainbar/setup_tile/wlan_settings/wlan_settings.h"
+//#include "mainbar/setup_tile/bluetooth_settings/bluetooth_settings.h"
+//#include "mainbar/setup_tile/wlan_settings/wlan_settings.h"
 #include "mainbar/setup_tile/time_settings/time_settings.h"
 #include "mainbar/setup_tile/watchface/watchface_manager.h"
 #include "gui/mainbar/setup_tile/watchface/config/watchface_expr.h"
-#include "mainbar/setup_tile/update/update.h"
+//#include "mainbar/setup_tile/update/update.h"
 #include "mainbar/setup_tile/style_settings/style_settings.h"
 #include "hardware/powermgm.h"
 #include "hardware/framebuffer.h"
@@ -119,16 +119,16 @@ void gui_setup( void ) {
     display_settings_tile_setup();
     move_settings_tile_setup();
     style_settings_tile_setup();
-    wlan_settings_tile_setup();
+    //wlan_settings_tile_setup();
     time_settings_tile_setup();
-    gps_settings_tile_setup();
+    //gps_settings_tile_setup();
     utilities_tile_setup();
     sound_settings_tile_setup();
     #ifndef NO_UPDATES
-        update_tile_setup();
+    //    update_tile_setup();
     #endif
     #ifndef NO_BLUETOOTH
-        bluetooth_settings_tile_setup();
+    //    bluetooth_settings_tile_setup();
     #endif
     #ifndef NO_WATCHFACE
         watchface_manager_setup();
@@ -136,7 +136,7 @@ void gui_setup( void ) {
     #endif
 
     #if defined( LILYGO_WATCH_HAS_SDCARD )
-        sdcard_settings_tile_setup();
+    //    sdcard_settings_tile_setup();
     #endif
 
     /*

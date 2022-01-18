@@ -43,7 +43,7 @@
     #include <pwd.h>
     #include "utils/logging.h"
 #else
-    #include <WiFi.h>
+//    #include <WiFi.h>
     #include <Arduino.h>
 
     #ifdef M5PAPER

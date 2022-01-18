@@ -27,12 +27,12 @@
 #include "watchface_expr.h"
 #include "hardware/pmu.h"
 #include "hardware/motion.h"
-#include "hardware/gpsctl.h"
-#include "hardware/wifictl.h"
-#include "hardware/blectl.h"
+//#include "hardware/gpsctl.h"
+//#include "hardware/wifictl.h"
+//#include "hardware/blectl.h"
 #include "hardware/rtcctl.h"
 #include "hardware/sound.h"
-#include "gui/mainbar/setup_tile/bluetooth_settings/bluetooth_message.h"
+//#include "gui/mainbar/setup_tile/bluetooth_settings/bluetooth_message.h"
 #include "time.h"
 
 static double time_hour;
@@ -44,13 +44,13 @@ static double sound_volume = 0.;
 static double sound_enabled = 0.;
 
 // Wifi
-static double wifi = 0; // disabled=0, enabled+disconnected=1, enabled+connected=2
+//static double wifi = 0; // disabled=0, enabled+disconnected=1, enabled+connected=2
 
 // Bluetooth
-static double ble = 0.; // disabled=0, enabled+disconnected=1, enabled+connected=2
+//static double ble = 0.; // disabled=0, enabled+disconnected=1, enabled+connected=2
 
 // GPS
-static double gps = 0.; // disabled=0, enabled(no fix)=1, enabled+fix=2
+//static double gps = 0.; // disabled=0, enabled(no fix)=1, enabled+fix=2
 
 // Alarm
 static double alarm_state = 0.;
@@ -68,25 +68,25 @@ extern "C" {
     double get_battery_voltage(void) {
         return pmu_get_battery_voltage() / 1000;
     }
-    double get_bluetooth_nb_msg(void) {
-        return bluetooth_get_number_of_msg();
-    }
-    double get_stepcounter(void) {
-        return bma_get_stepcounter();
-    }
+  //  double get_bluetooth_nb_msg(void) {
+  //      return bluetooth_get_number_of_msg();
+  //  }
+  //  double get_stepcounter(void) {
+   //     return bma_get_stepcounter();
+  //  }
 }
 
 te_variable watchface_expr_vars[] = {
-    {"gps", &gps},
-    {"ble", &ble},
+   // {"gps", &gps},
+   // {"ble", &ble},
     {"sound_volume", &sound_volume},
     {"sound_enabled", &sound_enabled},
     {"alarm", &alarm_state},
-    {"wifi", &wifi},
+  //  {"wifi", &wifi},
     {"battery_percent", (const void*)get_battery_percent, TE_FUNCTION0},
     {"battery_voltage", (const void*)get_battery_voltage, TE_FUNCTION0},
-    {"bluetooth_messages", (const void*)get_bluetooth_nb_msg, TE_FUNCTION0},
-    {"steps", (const void*)get_stepcounter, TE_FUNCTION0},
+  //  {"bluetooth_messages", (const void*)get_bluetooth_nb_msg, TE_FUNCTION0},
+   // {"steps", (const void*)get_stepcounter, TE_FUNCTION0},
     {"time_hour", &time_hour},
     {"time_min", &time_min},
     {"time_sec", &time_sec}
@@ -106,6 +106,7 @@ double watchface_expr_eval( te_expr *expr) {
     return te_eval( expr );
 }
 
+/*
 bool watchface_expr_gpsctl_event_cb( EventBits_t event, void *arg ) {
     switch( event ) {
         case GPSCTL_DISABLE:
@@ -123,6 +124,7 @@ bool watchface_expr_gpsctl_event_cb( EventBits_t event, void *arg ) {
     }
     return( true );
 }
+*/
 
 bool watchface_expr_soundctl_event_cb( EventBits_t event, void *arg ) {
     switch( event ) {
@@ -148,6 +150,7 @@ bool watchface_expr_rtcctl_event_cb( EventBits_t event, void *arg ) {
     return( true );
 }
 
+/*
 bool watchface_expr_blectl_event_cb( EventBits_t event, void *arg ) {
     switch( event ) {
         case BLECTL_ON:
@@ -165,7 +168,9 @@ bool watchface_expr_blectl_event_cb( EventBits_t event, void *arg ) {
     }
     return( true );
 }
+*/
 
+/*
 bool watchface_expr_wifictl_event_cb( EventBits_t event, void *arg ) {
     switch( event ) {
         case WIFICTL_CONNECT:
@@ -183,14 +188,15 @@ bool watchface_expr_wifictl_event_cb( EventBits_t event, void *arg ) {
     }
     return( true );
 }
+*/
 
 void watchface_expr_setup( void ) {
     #if defined( ONLY_ESSENTIAL )
         return;
     #endif
-    blectl_register_cb( BLECTL_CONNECT | BLECTL_DISCONNECT | BLECTL_ON | BLECTL_OFF, watchface_expr_blectl_event_cb, "bluetooth state" );
-    wifictl_register_cb( WIFICTL_CONNECT | WIFICTL_DISCONNECT | WIFICTL_OFF | WIFICTL_ON, watchface_expr_wifictl_event_cb, "wifi state" );
+ //   blectl_register_cb( BLECTL_CONNECT | BLECTL_DISCONNECT | BLECTL_ON | BLECTL_OFF, watchface_expr_blectl_event_cb, "bluetooth state" );
+ //   wifictl_register_cb( WIFICTL_CONNECT | WIFICTL_DISCONNECT | WIFICTL_OFF | WIFICTL_ON, watchface_expr_wifictl_event_cb, "wifi state" );
     rtcctl_register_cb( RTCCTL_ALARM_ENABLED | RTCCTL_ALARM_DISABLED, watchface_expr_rtcctl_event_cb, "rtc state" );
     sound_register_cb( SOUNDCTL_ENABLED | SOUNDCTL_VOLUME, watchface_expr_soundctl_event_cb, "sound state");
-    gpsctl_register_cb( GPSCTL_DISABLE | GPSCTL_ENABLE | GPSCTL_FIX | GPSCTL_NOFIX, watchface_expr_gpsctl_event_cb, "gps state" );
+  //  gpsctl_register_cb( GPSCTL_DISABLE | GPSCTL_ENABLE | GPSCTL_FIX | GPSCTL_NOFIX, watchface_expr_gpsctl_event_cb, "gps state" );
 }

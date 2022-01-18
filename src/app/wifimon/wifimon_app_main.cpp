@@ -19,7 +19,7 @@
  */
 #include "config.h"
 
-#include "hardware/wifictl.h"
+//#include "hardware/wifictl.h"
 #include "hardware/display.h"
 
 
@@ -47,7 +47,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <lwip/sockets.h>
-#include "esp_wifi.h"
+//#include "esp_wifi.h"
 
 //CURT
 /*******************************************************/
@@ -1485,8 +1485,9 @@ void BMA2X2_Measure_Accelerometer()
 /**************************************************************************************************************
  *************************************** wifimon_sniffer_packet_handler ********************************************
  **************************************************************************************************************/  
-void wifimon_sniffer_packet_handler( void* buff, wifi_promiscuous_pkt_type_t type );
-static wifi_country_t wifi_country = {.cc="CN", .schan = 1, .nchan = 13}; 
+//void wifimon_sniffer_packet_handler( void* buff, wifi_promiscuous_pkt_type_t type );
+
+//static wifi_country_t wifi_country = {.cc="CN", .schan = 1, .nchan = 13}; 
 
 lv_obj_t *wifimon_app_main_tile = NULL;
 lv_obj_t *chart = NULL;
@@ -1516,7 +1517,7 @@ static void wifimon_test_play_sound( void );
 uint8_t level = 0, channel = 1;
 int data = 0, mgmt = 0, misc = 0; 
 
-
+/*
 void wifimon_sniffer_packet_handler( void* buff, wifi_promiscuous_pkt_type_t type ) {
     switch( type ) {
         case WIFI_PKT_MGMT: 
@@ -1527,19 +1528,20 @@ void wifimon_sniffer_packet_handler( void* buff, wifi_promiscuous_pkt_type_t typ
             break; 
         default:  
             misc++;
-            break;
-    }
+            break; 
+    } 
 }
+*/
 
 /**************************************************************************************************************
  *************************************** wifimon_app_main_setup ********************************************
  **************************************************************************************************************/  
 static void wifimon_sniffer_set_channel( uint8_t channel ) {
-#ifdef NATIVE_64BIT
+//#ifdef NATIVE_64BIT
 
-#else
-    esp_wifi_set_channel( channel, WIFI_SECOND_CHAN_NONE );
-#endif
+//#else
+ //   esp_wifi_set_channel( channel, WIFI_SECOND_CHAN_NONE );
+//#endif
     log_i("set wifi channel: %d", channel );
 }
 
@@ -1547,8 +1549,8 @@ static void wifimon_channel_select_event_handler( lv_obj_t * obj, lv_event_t eve
     switch( event ) {
         case LV_EVENT_VALUE_CHANGED: {
             char buf[32];
-            lv_roller_get_selected_str( obj, buf, sizeof( buf ) );
-            wifimon_sniffer_set_channel( atoi(buf) );
+        //    lv_roller_get_selected_str( obj, buf, sizeof( buf ) );
+        //    wifimon_sniffer_set_channel( atoi(buf) );
             break;
         }
     }
@@ -1924,9 +1926,9 @@ static void wifimon_hibernate_cb( void ) {
     //sound_set_enabled_config( true );   //CURT ADD
     //sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
     
-    esp_wifi_set_promiscuous( false ); 
+ //   esp_wifi_set_promiscuous( false ); 
 
-    wifictl_off();
+ //   wifictl_off();
     /**
      * restore display timeout time
      */
@@ -1948,20 +1950,20 @@ static void wifimon_activate_cb( void ) {
     /**
      * restart wifi
      */
-    wifictl_off();
+ //   wifictl_off();
     /**
      * setup promiscuous mode
      */
 
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    esp_wifi_init( &cfg );
-    esp_wifi_set_country( &wifi_country );
-    esp_wifi_set_mode( WIFI_MODE_NULL ); 
-    esp_wifi_start();
-    esp_wifi_set_promiscuous( true );
-    esp_wifi_set_promiscuous_rx_cb( &wifimon_sniffer_packet_handler );
+   // wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+  //  esp_wifi_init( &cfg );
+  //  esp_wifi_set_country( &wifi_country );
+  //  esp_wifi_set_mode( WIFI_MODE_NULL ); 
+  //  esp_wifi_start();
+   // esp_wifi_set_promiscuous( true );
+   // esp_wifi_set_promiscuous_rx_cb( &wifimon_sniffer_packet_handler );
     lv_roller_set_selected( channel_select, 0, LV_ANIM_OFF );
-    wifimon_sniffer_set_channel( 1 );
+ //   wifimon_sniffer_set_channel( 1 );
 
     /**
      * start stats fetch task

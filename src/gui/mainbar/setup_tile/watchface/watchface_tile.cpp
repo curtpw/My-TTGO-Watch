@@ -36,15 +36,15 @@
 #include "gui/app.h"
 #include "gui/widget.h"
 #include "gui/widget_styles.h"
-#include "gui/mainbar/setup_tile/bluetooth_settings/bluetooth_message.h"
-#include "hardware/blectl.h"
+//#include "gui/mainbar/setup_tile/bluetooth_settings/bluetooth_message.h"
+//#include "hardware/blectl.h"
 #include "hardware/rtcctl.h"
 #include "hardware/powermgm.h"
 #include "hardware/display.h"
 #include "hardware/touch.h"
 #include "hardware/pmu.h"
 #include "hardware/motion.h"
-#include "hardware/wifictl.h"
+//#include "hardware/wifictl.h"
 #include "utils/filepath_convert.h"
 
 #ifdef NATIVE_64BIT
@@ -56,7 +56,7 @@
     #include <pwd.h>
     #include "utils/logging.h"
 #else
-    #include <WiFi.h>
+ //   #include <WiFi.h>
     #include <Arduino.h>
 
     #ifdef M5PAPER
@@ -814,8 +814,8 @@ void watchface_avtivate_cb( void ) {
     /**
      * save block show messages state
      */
-    watchface_tile_block_show_messages = blectl_get_show_notification();
-    blectl_set_show_notification( false );
+  //  watchface_tile_block_show_messages = blectl_get_show_notification();
+  //  blectl_set_show_notification( false );
     /**
      * hide statusbar
      */
@@ -828,7 +828,7 @@ void watchface_avtivate_cb( void ) {
 
 void watchface_hibernate_cb( void ) {
     watchface_active = false;
-    blectl_set_show_notification( watchface_tile_block_show_messages );
+  //  blectl_set_show_notification( watchface_tile_block_show_messages );
     powermgm_set_normal_mode();
 }
 
@@ -959,12 +959,12 @@ void watchface_app_label_update( tm &info ) {
             else if ( !strcmp( "battery_voltage", watchface_theme_config.dial.label[ i ].type ) ) {
                 snprintf( temp_str, sizeof( temp_str ), watchface_theme_config.dial.label[ i ].label, pmu_get_battery_voltage() / 1000 );
             }
-            else if ( !strcmp( "bluetooth_messages", watchface_theme_config.dial.label[ i ].type ) ) {
-                snprintf( temp_str, sizeof( temp_str ), watchface_theme_config.dial.label[ i ].label, bluetooth_get_number_of_msg() );
-            }
-            else if ( !strcmp( "steps", watchface_theme_config.dial.label[ i ].type ) ) {
-                snprintf( temp_str, sizeof( temp_str ), watchface_theme_config.dial.label[ i ].label, bma_get_stepcounter() );
-            }
+        //    else if ( !strcmp( "bluetooth_messages", watchface_theme_config.dial.label[ i ].type ) ) {
+        //        snprintf( temp_str, sizeof( temp_str ), watchface_theme_config.dial.label[ i ].label, bluetooth_get_number_of_msg() );
+        //    }
+        //    else if ( !strcmp( "steps", watchface_theme_config.dial.label[ i ].type ) ) {
+        //        snprintf( temp_str, sizeof( temp_str ), watchface_theme_config.dial.label[ i ].label, bma_get_stepcounter() );
+        //    }
             else if ( !strcmp( "expr", watchface_theme_config.dial.label[ i ].type ) && watchface_theme_config.dial.label[ i ].expr != NULL ) {
                 double val = watchface_expr_eval(watchface_theme_config.dial.label[ i ].expr);
                 snprintf( temp_str, sizeof( temp_str ), watchface_theme_config.dial.label[ i ].label, val );

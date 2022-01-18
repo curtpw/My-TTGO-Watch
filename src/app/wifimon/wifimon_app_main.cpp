@@ -260,7 +260,7 @@ void MLX90641_I2CInit()
 
         bytesRemaining -= numberOfBytesToRead;
 
-        startAddress += numberOfBytesToRead / 2;
+        startAddress += numberOfBytesToRead / 2; 
     }
 
     return 0;   
@@ -277,8 +277,9 @@ int MLX90641_I2CRead(uint8_t _deviceAddress, uint16_t startAddress, uint16_t nWo
     Wire.endTransmission(false);
     i2c_err_t error = Wire.readTransmission(_deviceAddress, (uint8_t*) data, nWordsRead*2);
     if(error != 0){//problems
-        Serial.printf("Block read from sensor(0x%02X) at address=%d of %d uint16_t's failed=%d(%s)\n",
+        log_i("Block read from sensor(0x%02X) at address=%d of %d uint16_t's failed=%d(%s)\n",
           _deviceAddress,startAddress,nWordsRead,error,Wire.getErrorText(error));
+        return 1;
     }
     else { // reverse byte order, sensor Big Endian, ESP32 Little Endian
         for(auto a = 0; a<nWordsRead; a++){
@@ -519,27 +520,52 @@ float mlx90641ReducedTo[48] = {0.0};       //reduce to 8x6, 1/2 each side
 
 bool MLX41_SETUP_FAIL = false;
 
+/**************************************************************************************************************
+ ************************************** MLX90641 ISCONNECTED CHECK ********************************************
+ **************************************************************************************************************/  
+ 
+//Returns true if the MLX90641 is detected on the I2C bus
+boolean isConnected() {
+    Wire.beginTransmission((uint8_t)MLX90641_address);
+    if (Wire.endTransmission() != 0) {
+        return (false);    //Sensor did not ACK
+    }
+    return (true);
+}
 
 /**************************************************************************************************************
  *************************************** READ MLX90641 SENSOR DATA ********************************************
  **************************************************************************************************************/  
- void readMLX90641(){
-    long startTime = millis();
+ int readMLX90641(){
+   // long startTime = millis();
     float vdd = 0;
     float Ta = 0;
     
-    for (byte x = 0 ; x < 2 ; x++) {
+   // for (byte x = 0 ; x < 2 ; x++) {
+        log_i("~~MLX90641 frame data ");
         int status = MLX90641_GetFrameData(MLX90641_address, MLX90641Frame);
 
-        float vdd = MLX90641_GetVdd(MLX90641Frame, &MLX90641);
-        float Ta = MLX90641_GetTa(MLX90641Frame, &MLX90641);
+        //error from I2C read
+        if(status != 0){
+            log_i("~~ FAIL MLX90641 frame data ");
+            return 1;
+        }
+
+        log_i("~~MLX90641 VDD ");
+      //  float vdd = MLX90641_GetVdd(MLX90641Frame, &MLX90641);
+         vdd = MLX90641_GetVdd(MLX90641Frame, &MLX90641);
+
+        log_i("~~MLX90641 GetTa");
+      //  float Ta = MLX90641_GetTa(MLX90641Frame, &MLX90641);
+        Ta = MLX90641_GetTa(MLX90641Frame, &MLX90641);
 
         float tr = Ta - TA_SHIFT; //Reflected temperature based on the sensor ambient temperature
         float emissivity = 0.95;
 
+        log_i("~~MLX90641 CalcTo");
         MLX90641_CalculateTo(MLX90641Frame, &MLX90641, emissivity, tr, MLX90641To);
-    }
-    long stopTime = millis();
+   // }
+    //long stopTime = millis();
 
     //reduction local var
     float currentReducedM41[48] = {0.0};  //8x6
@@ -559,24 +585,16 @@ bool MLX41_SETUP_FAIL = false;
 
     log_i("MLX90641: %f", MLX90641To[3]); //test
 
-    for(int c = 0; c < 48; c++){
-      currentReducedM41[c] = currentReducedM41[c] / 4;  //average each chunk of latest MLX90640 data
-      mlx90641ReducedTo[c] = (mlx90641ReducedTo[c] + currentReducedM41[c]) / 2; //average with past data ie low pass filter
-    }
+  //  for(int c = 0; c < 48; c++){
+  //    currentReducedM41[c] = currentReducedM41[c] / 4;  //average each chunk of latest MLX90640 data
+   //   mlx90641ReducedTo[c] = (mlx90641ReducedTo[c] + currentReducedM41[c]) / 2; //average with past data ie low pass filter
+   // }
+    isConnected();
+
+    return 0;
  }
 
-/**************************************************************************************************************
- ************************************** MLX90641 ISCONNECTED CHECK ********************************************
- **************************************************************************************************************/  
- 
-//Returns true if the MLX90641 is detected on the I2C bus
-boolean isConnected() {
-    Wire.beginTransmission((uint8_t)MLX90641_address);
-    if (Wire.endTransmission() != 0) {
-        return (false);    //Sensor did not ACK
-    }
-    return (true);
-}
+
 
 
 
@@ -1777,7 +1795,7 @@ void wifimon_app_main_setup( uint32_t tile_num ) {
  // ========== INIT VL53L0X DISTANCE SENSOR ========== 
    // Serial.println("== INIT VL53L0X MICRO LIDAR DISTANCE SENSOR");
     io_timeout = 0;
-    VL53L0X_init();
+  //  VL53L0X_init(true);
     //VL53L0X_init();
     //VL53L0X_init();
     //vl53l0x.setTimeout(500);
@@ -1786,7 +1804,7 @@ void wifimon_app_main_setup( uint32_t tile_num ) {
     // fast as possible).  To use continuous timed mode
     // instead, provide a desired inter-measurement period in
     // ms (e.g. sensor.startContinuous(100)).
-    VL53L0X_startContinuous(100);
+   // VL53L0X_startContinuous(100);
   //  VL53L0X_startContinuous(100);
   //  VL53L0X_startContinuous(100);
 
@@ -1803,7 +1821,12 @@ void wifimon_app_main_setup( uint32_t tile_num ) {
 
    // delay(3);
     if (isConnected() == false) {
-        log_i("MLX90641 not detected at default I2C address. Please check wiring. Freezing.");
+        log_i("MLX90641 not detected TRY AGAIN");
+        if (isConnected() == false) {
+            log_i("MLX90641 not detected at default I2C address. Please check wiring. Freezing.");
+        } else {
+             log_i("MLX90641 detected");
+        }
        // while (1);
     } else {
         log_i("MLX90641 detected");
@@ -1811,19 +1834,39 @@ void wifimon_app_main_setup( uint32_t tile_num ) {
 
 
     //weird online thingy https://www.instructables.com/Infrared-Thermal-Imaging-Camera-With-MLX90640-and-/
-    MLX90641_I2CWrite(0x33, 0x800D, 6401);
+ //   MLX90641_I2CWrite(0x33, 0x800D, 6401);
 
     //Get device parameters - We only have to do this once
     int status;
 
-    //delay(3);
     status = MLX90641_DumpEE(MLX90641_address, eeMLX90641);
     errorno = status;//MLX90641_CheckEEPROMValid(eeMLX90641);//eeMLX90641[10] & 0x0040;//
     
     if (status != 0) {
-        log_i("MLX90641 Failed to load system parameters");
-        MLX41_SETUP_FAIL = true;
+        log_i("MLX90641 Failed to load system parameters TRY AGAIN 1");
+        isConnected();
+
+        status = MLX90641_DumpEE(MLX90641_address, eeMLX90641);
+        errorno = status;//MLX90641_CheckEEPROMValid(eeMLX90641);//eeMLX90641[10] & 0x0040;//
+
+        if (status != 0) {
+            log_i("MLX90641 Failed to load system parameters TRY AGAIN 2");
+            isConnected();
+
+            status = MLX90641_DumpEE(MLX90641_address, eeMLX90641);
+            errorno = status;//MLX90641_CheckEEPROMValid(eeMLX90641);//eeMLX90641[10] & 0x0040;//
+            if (status != 0) {
+                log_i("MLX90641 Failed to load system parameters");
+                MLX41_SETUP_FAIL = true;
+            } else {
+                log_i("MLX90641 load system parameters success");
+            }
+
+        } else {
+            log_i("MLX90641 load system parameters success");
+        }
     //   while(1);
+
     } else {
         log_i("MLX90641 load system parameters sucess");
     }
@@ -1832,18 +1875,33 @@ void wifimon_app_main_setup( uint32_t tile_num ) {
     status = MLX90641_ExtractParameters(eeMLX90641, &MLX90641);
     //errorno = status;
     if (status != 0) {
-        log_i("MLX90641 Parameter extraction failed");
-        MLX41_SETUP_FAIL = true;
+        log_i("MLX90641 Parameter extraction failed TRY AGAIN");
+        isConnected();
+
+        status = MLX90641_ExtractParameters(eeMLX90641, &MLX90641);
+        if (status != 0) {
+            log_i("MLX90641 Parameter extraction failed");
+            MLX41_SETUP_FAIL = true;
+        } else {
+            log_i("MLX90641 Parameter extraction sucess");
+        }
    //     while(1);
+    } else {
+        log_i("MLX90641 Parameter extraction sucess");
     }
 
    // delay(3);
 
     //Once params are extracted, we can release eeMLX90641 array
 
-    //MLX90641_SetRefreshRate(MLX90641_address, 0x02); //Set rate to 2Hz
-    MLX90641_SetRefreshRate(MLX90641_address, 0x03); //Set rate to 4Hz
-    //MLX90641_SetRefreshRate(MLX90641_address, 0x07); //Set rate to 64Hz
+    int MLX41setRate = MLX90641_SetRefreshRate(MLX90641_address, 0x02); //Set rate to 2Hz
+  //  MLX90641_SetRefreshRate(MLX90641_address, 0x03); //Set rate to 4Hz
+    //int MLX41setRate = MLX90641_SetRefreshRate(MLX90641_address, 0x07); //Set rate to 64Hz
+    if (MLX41setRate != 0){
+        log_i("FAIL MLX90641_SetRefreshRate");
+    } else {
+        log_i("MLX90641_SetRefreshRate SUCCESS");
+    }
 
 delay(3);
 
@@ -1942,11 +2000,11 @@ static void wifimon_activate_cb( void ) {
     log_i("----------------- CURT -------- wifimon_activate_cb");
  //   alarm_in_progress_start_alarm();
 
-    sound_set_enabled_config( true );
-    sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
+   // sound_set_enabled_config( true );
+   // sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
 
-    sound_set_enabled_config( true );   
-    sound_play_progmem_wav(test_c_mouth_wav, test_c_mouth_wav_len);
+   // sound_set_enabled_config( true );   
+   // sound_play_progmem_wav(test_c_mouth_wav, test_c_mouth_wav_len);
     /**
      * restart wifi
      */
@@ -1992,7 +2050,7 @@ static void wifimon_app_task( lv_task_t * task ) {
      */
 
     // ------------- CURT ADD ----------------------
-    log_i("----------------- CURT -------- wifimon_app_task");
+    log_i("----------------- CURT -------- LOOP / wifimon_app_task");
         TTGOClass * ttgo = TTGOClass::getWatch();
 
     Accel acc;
@@ -2058,18 +2116,18 @@ static void wifimon_app_task( lv_task_t * task ) {
 
 
   //********************************************* CURT ADD VL53L0X ***********************************************************************************************************
-    if (VL53L0X_timeoutOccurred()) { 
+  /*  if (VL53L0X_timeoutOccurred()) { 
         log_i("VL53L0X TIMEOUT"); 
         //!! FLAG BAD DATA
     } else {
-        data_VL53L0X_distance = (float)VL53L0X_readRangeContinuousMillimeters();
+        data_VL53L0X_distance = (float)VL53L0X_readRangeSingleMillimeters();
         if(data_VL53L0X_distance > 9999){
-            data_VL53L0X_distance = (float)VL53L0X_readRangeContinuousMillimeters();
+            data_VL53L0X_distance = (float)VL53L0X_readRangeSingleMillimeters();
         }
         //data_VL53L0X_distance = (float)VL53L0X_readRangeSingleMillimeters();
         log_i("VL53L0X distance: %f", data_VL53L0X_distance);
     }
-
+*/
       
 
 
@@ -2087,7 +2145,7 @@ static void wifimon_app_task( lv_task_t * task ) {
             log_i("MLX90641 FAIL");
         }
     } else { */
-  //      readMLX90641();
+        int readMLX41 = readMLX90641();
       //  delay(10);
    // }
 
@@ -2108,10 +2166,10 @@ static void wifimon_app_task( lv_task_t * task ) {
     //********************************************* CURT ADD AUDIO ***********************************************************************************************************
     // CURT ADD !!!!!!!!!!!!!!!!
     if(mgmt > 95){
-        wifimon_test_play_sound();
+     //   wifimon_test_play_sound();
     }
     if(data > 95){
-        wifimon_test_play_sound();
+    //    wifimon_test_play_sound();
     }
 
     /**
@@ -2345,6 +2403,8 @@ int MLX90641_GetFrameData(uint8_t slaveAddr, uint16_t *frameData)
         dataReady = statusRegister & 0x0008;
     }   
     subPage = statusRegister & 0x0001;
+
+    log_i("MLX41 dataReady statusRegister: %d", dataReady );
         
     while(dataReady != 0 && cnt < 5)
     { 

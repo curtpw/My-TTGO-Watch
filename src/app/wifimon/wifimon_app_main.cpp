@@ -168,7 +168,8 @@ double readAmbientTempC(int sensorNum);
 /*******************************************************/
 /*******************************************************/
 
-    #define I2C_BUFFER_LENGTH 32
+//esp32 default I2C buffer length is 128, not sure what making it much small accomplishes
+ //   #define I2C_BUFFER_LENGTH 32
 
 
 

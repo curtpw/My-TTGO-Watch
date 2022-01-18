@@ -68,7 +68,6 @@ static void watchface_setup_decompress_cb( lv_obj_t *obj, lv_event_t event );
 void watchface_setup_progress_cb( int32_t percent );
 
 void watchface_setup_tile_setup( uint32_t tile_num ) {
-    log_i("***** watchface_setup_tile_setup");
     /**
      * load watchface config file
      */
@@ -156,7 +155,6 @@ String watchface_setup_get_theme_url( void ) {
 }
 
 static void watchface_setup_decompress_cb( lv_obj_t *obj, lv_event_t event ) {
-     log_i("*****   watchface_setup_decompress_cb");
     switch( event ) {
         case LV_EVENT_CLICKED:
             /**

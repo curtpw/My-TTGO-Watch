@@ -27,7 +27,7 @@
 #include "gui/mainbar/setup_tile/watchface/watchface_tile.h"
 #include "watchface_manager_app.h"
 
-//#include "gui/mainbar/setup_tile/bluetooth_settings/bluetooth_message.h"
+#include "gui/mainbar/setup_tile/bluetooth_settings/bluetooth_message.h"
 #include "gui/mainbar/app_tile/app_tile.h"
 #include "gui/mainbar/main_tile/main_tile.h"
 #include "gui/mainbar/mainbar.h"
@@ -252,17 +252,15 @@ void watchface_manager_app_setup( uint32_t tile_num ) {
     /**
      * register wifictl call back
      */
-
+    wifictl_register_cb( WIFICTL_CONNECT_IP, watchface_manager_wifictl_event_cb, "watchface wifictl" );
 }
 
 bool watchface_manager_wifictl_event_cb( EventBits_t event, void *arg ) {
-    /*
     switch( event ) {
         case WIFICTL_CONNECT_IP:
             watchface_manager_wifi_init = true;
             break;
     }
-    */
     return( true );
 }
 
@@ -344,14 +342,12 @@ static void watchface_manager_prev_theme_event_cb(  lv_obj_t * obj, lv_event_t e
 static void download_watchface_manager_app_event_cb(  lv_obj_t * obj, lv_event_t event ) {
     switch ( event ) {
         case LV_EVENT_CLICKED:
-        /*
 #ifdef NATIVE_64BIT
 #else
             if ( !(xEventGroupGetBits( watchface_manager_app_event_handle ) & WATCHFACE_MANAGER_APP_DOWNLOAD_THEME) ) {
                 xEventGroupSetBits( watchface_manager_app_event_handle, WATCHFACE_MANAGER_APP_DOWNLOAD_THEME );
             }
 #endif
-*/
             break;
     }
 }

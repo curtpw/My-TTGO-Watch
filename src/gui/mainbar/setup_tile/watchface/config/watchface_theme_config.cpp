@@ -39,8 +39,6 @@ watchface_theme_config_t::watchface_theme_config_t() : BaseJsonConfig( WATCHFACE
 bool watchface_theme_config_t::onSave(JsonDocument& doc ) {
     int32_t labelcount = 0;
 
-   log_i("***** bool watchface_theme_config_t::onSave(JsonDocument& doc ) {");
-
     doc["api_level"] = dial.api_level;
 
     if ( dial.dial.enable ) {
@@ -128,9 +126,6 @@ bool watchface_theme_config_t::onSave(JsonDocument& doc ) {
 }
 
 bool watchface_theme_config_t::onLoad(JsonDocument& doc) {
-
-       log_i("***** bool watchface_theme_config_t::onLoad(JsonDocument& doc) ");
-       
     dial.api_level = doc["api_level"] | API_LEVEL;
 
     dial.dial.enable = doc["dial"]["enable"] | false;
@@ -236,9 +231,6 @@ bool watchface_theme_config_t::onLoad(JsonDocument& doc) {
 }
 
 bool watchface_theme_config_t::onDefault( void ) {
-
-
-       log_i("***** bool watchface_theme_config_t::onDefault( void ) {");
     dial.api_level = API_LEVEL;
     /**
      * set default dial

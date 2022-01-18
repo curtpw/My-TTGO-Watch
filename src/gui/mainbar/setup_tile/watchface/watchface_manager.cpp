@@ -55,7 +55,6 @@ static void enter_watchface_setup_event_cb( lv_obj_t * obj, lv_event_t event );
  * setup routine for watchface manager app
  */
 void watchface_manager_setup( void ) {
-      log_i("*****  watchface_manager_setup");
     #if defined( ONLY_ESSENTIAL )
         return;
     #endif

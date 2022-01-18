@@ -25,8 +25,8 @@
 
     #include "config.h"
     #include "utils/basejsonconfig.h"
-    //#include "utils/webserver/webserver.h"
-    //#include "utils/ftpserver/ftpserver.h"
+    #include "utils/webserver/webserver.h"
+    #include "utils/ftpserver/ftpserver.h"
     #define NETWORKLIST_ENTRYS          20
     #define WIFICTL_JSON_CONFIG_FILE    "/wificfg.json"
 
@@ -49,10 +49,10 @@
         bool enable_on_standby = false;                     /** @brief enable on standby */
         bool webserver = false;                             /** @brief enable on webserver */
         bool ftpserver = false;                             /** @brief enable on ftpserver */
-     //   char ftpuser[32] = FTPSERVER_USER;                  /** @brief ftpserver username*/
-     //   char ftppass[32] = FTPSERVER_PASSWORD;              /** @brief ftpserver password*/
-     //   wifictl_networklist* networklist = NULL;            /** @brief network list config pointer */
-     //   wifictl_networklist* networklist_tried = NULL;      /** @brief network list config pointer of networks a connection was tried */
+        char ftpuser[32] = FTPSERVER_USER;                  /** @brief ftpserver username*/
+        char ftppass[32] = FTPSERVER_PASSWORD;              /** @brief ftpserver password*/
+        wifictl_networklist* networklist = NULL;            /** @brief network list config pointer */
+        wifictl_networklist* networklist_tried = NULL;      /** @brief network list config pointer of networks a connection was tried */
 
         protected:
         ////////////// Available for overloading: //////////////

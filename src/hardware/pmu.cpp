@@ -22,7 +22,7 @@
 #include "config.h"
 #include "pmu.h"
 #include "powermgm.h"
-//#include "blectl.h"
+#include "blectl.h"
 #include "callback.h"
 
 #ifdef NATIVE_64BIT
@@ -68,7 +68,7 @@ pmu_config_t pmu_config;
 
 bool pmu_powermgm_event_cb( EventBits_t event, void *arg );
 bool pmu_powermgm_loop_cb( EventBits_t event, void *arg );
-//bool pmu_blectl_event_cb( EventBits_t event, void *arg );
+bool pmu_blectl_event_cb( EventBits_t event, void *arg );
 bool pmu_send_cb( EventBits_t event, void *arg );
 void pmu_write_log( const char * filename );
 
@@ -154,7 +154,7 @@ void pmu_setup( void ) {
     /*
      * register blectl callback function
      */
- //   blectl_register_cb( BLECTL_CONNECT, pmu_blectl_event_cb, "pmu blectl" );
+    blectl_register_cb( BLECTL_CONNECT, pmu_blectl_event_cb, "pmu blectl" );
 }
 
 bool pmu_powermgm_loop_cb( EventBits_t event, void *arg ) {
@@ -201,7 +201,7 @@ bool pmu_powermgm_event_cb( EventBits_t event, void *arg ) {
     }
     return( retval );
 }
-/*
+
 bool pmu_blectl_event_cb( EventBits_t event, void *arg ) {
     switch( event ) {
         case BLECTL_CONNECT:
@@ -209,7 +209,7 @@ bool pmu_blectl_event_cb( EventBits_t event, void *arg ) {
     }
     return( true );
 }
-*/
+
 void pmu_loop( void ) {
     static uint64_t nextmillis = 0;
     static int32_t percent = pmu_get_battery_percent();

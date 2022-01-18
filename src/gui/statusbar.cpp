@@ -31,13 +31,13 @@
 
 #include "hardware/powermgm.h"
 #include "hardware/wifictl.h"
-//#include "hardware/blectl.h"
+#include "hardware/blectl.h"
 #include "hardware/rtcctl.h"
 #include "hardware/motion.h"
 #include "hardware/pmu.h"
 #include "hardware/sound.h"
 #include "hardware/display.h"
-//#include "hardware/gpsctl.h"
+#include "hardware/gpsctl.h"
 
 #include "gui/widget_factory.h"
 #include "gui/widget_styles.h"
@@ -62,7 +62,7 @@ static lv_obj_t *statusbar = NULL;
 static lv_obj_t *statusbar_wifi = NULL;
 static lv_obj_t *statusbar_wifilabel = NULL;
 static lv_obj_t *statusbar_wifiiplabel = NULL;
-//static lv_obj_t *statusbar_bluetooth = NULL;
+static lv_obj_t *statusbar_bluetooth = NULL;
 static lv_obj_t *statusbar_gps = NULL;
 static lv_obj_t *statusbar_stepcounterlabel = NULL;
 static lv_obj_t *statusbar_volume_slider = NULL;
@@ -75,7 +75,7 @@ lv_color_t statusbar_retracted_color = LV_COLOR_WHITE;
 lv_color_t statusbar_extended_color = LV_COLOR_BLACK;
 
 LV_IMG_DECLARE(wifi_64px);
-//LV_IMG_DECLARE(bluetooth_64px);
+LV_IMG_DECLARE(bluetooth_64px);
 LV_IMG_DECLARE(alarm_16px);
 LV_IMG_DECLARE(brightness_32px);
 LV_IMG_DECLARE(sound_32px);
@@ -88,7 +88,7 @@ lv_status_bar_t statusicon[ STATUSBAR_NUM ] =
 {
     { NULL, NULL, LV_ALIGN_IN_RIGHT_MID, &statusbarstyle[ STATUSBAR_STYLE_WHITE ] },
     { NULL, LV_SYMBOL_BATTERY_FULL, LV_ALIGN_OUT_LEFT_MID, &statusbarstyle[ STATUSBAR_STYLE_WHITE ] },
- //   { NULL, LV_SYMBOL_BLUETOOTH, LV_ALIGN_OUT_LEFT_MID, &statusbarstyle[ STATUSBAR_STYLE_WHITE ] },
+    { NULL, LV_SYMBOL_BLUETOOTH, LV_ALIGN_OUT_LEFT_MID, &statusbarstyle[ STATUSBAR_STYLE_WHITE ] },
     { NULL, LV_SYMBOL_WIFI, LV_ALIGN_OUT_LEFT_MID, &statusbarstyle[ STATUSBAR_STYLE_WHITE ] },
     { NULL, LV_SYMBOL_VOLUME_MAX, LV_ALIGN_OUT_LEFT_MID, &statusbarstyle[ STATUSBAR_STYLE_WHITE ] },
     { NULL, LV_SYMBOL_GPS, LV_ALIGN_OUT_LEFT_MID, &statusbarstyle[ STATUSBAR_STYLE_WHITE ] },
@@ -102,7 +102,7 @@ bool should_save_sound_config = false;
 
 void statusbar_event( lv_obj_t * statusbar, lv_event_t event );
 void statusbar_wifi_event_cb( lv_obj_t *wifi, lv_event_t event );
-//void statusbar_bluetooth_event_cb( lv_obj_t *bluetooth, lv_event_t event );
+void statusbar_bluetooth_event_cb( lv_obj_t *bluetooth, lv_event_t event );
 void statusbar_volume_slider_event_handler_cb( lv_obj_t *sound_slider, lv_event_t event );
 bool statusbar_gpsctl_event_cb( EventBits_t event, void *arg );
 void statusbar_sound_event_cb( lv_obj_t *sound, lv_event_t event );
@@ -110,7 +110,7 @@ void statusbar_display_event_cb( lv_obj_t *display, lv_event_t event );
 void statusbar_brightness_slider_event_handler_cb( lv_obj_t *brightness_slider, lv_event_t event );
 
 bool statusbar_soundctl_event_cb( EventBits_t event, void *arg );
-//bool statusbar_blectl_event_cb( EventBits_t event, void *arg );
+bool statusbar_blectl_event_cb( EventBits_t event, void *arg );
 bool statusbar_wifictl_event_cb( EventBits_t event, void *arg );
 bool statusbar_rtcctl_event_cb( EventBits_t event, void *arg );
 bool statusbar_bmactl_event_cb( EventBits_t event, void *arg );
@@ -120,7 +120,7 @@ bool statusbar_style_event_cb( EventBits_t event, void *arg );
 
 void statusbar_wifi_set_state( bool state, const char *wifiname );
 void statusbar_wifi_set_ip_state( bool state, const char *ip );
-//void statusbar_bluetooth_set_state( bool state );
+void statusbar_bluetooth_set_state( bool state );
 void statusbar_gps_event_cb( lv_obj_t *gps, lv_event_t event );
 void statusbar_set_dark( bool dark_mode );
 
@@ -249,12 +249,10 @@ void statusbar_setup( void )
     lv_label_set_text(statusbar_wifiiplabel, "");
     lv_obj_align(statusbar_wifiiplabel, statusbar_wifilabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 0 );
 
-/*
     statusbar_bluetooth = wf_add_image_button( statusbar, bluetooth_64px, statusbar_bluetooth_event_cb, &style );
     lv_imgbtn_set_checkable (statusbar_bluetooth, true );
     lv_obj_align( statusbar_bluetooth, statusbar, LV_ALIGN_IN_TOP_RIGHT, -8, STATUSBAR_HEIGHT );
     lv_imgbtn_set_state( statusbar_bluetooth, LV_BTN_STATE_CHECKED_PRESSED );
-    */
 
     statusbar_gps = wf_add_image_button( statusbar, gps_64px, statusbar_gps_event_cb, &style );
     lv_imgbtn_set_checkable (statusbar_gps, true );
@@ -314,7 +312,7 @@ void statusbar_setup( void )
     statusbar_hide_icon( STATUSBAR_BELL );
     statusbar_hide_icon( STATUSBAR_WARNING );
     statusbar_hide_icon( STATUSBAR_WIFI );
-    //statusbar_hide_icon( STATUSBAR_BLUETOOTH );
+    statusbar_hide_icon( STATUSBAR_BLUETOOTH );
     statusbar_hide_icon( STATUSBAR_VOLUME );
     statusbar_hide_icon( STATUSBAR_GPS );
 
@@ -325,15 +323,15 @@ void statusbar_setup( void )
         statusbar_hide_icon( STATUSBAR_ALARM );
     }
 
-   // statusbar_style_icon( STATUSBAR_BLUETOOTH, STATUSBAR_STYLE_GRAY );
+    statusbar_style_icon( STATUSBAR_BLUETOOTH, STATUSBAR_STYLE_GRAY );
 
-   // blectl_register_cb( BLECTL_CONNECT | BLECTL_DISCONNECT | BLECTL_ON | BLECTL_OFF, statusbar_blectl_event_cb, "statusbar bluetooth" );
-   // wifictl_register_cb( WIFICTL_CONNECT | WIFICTL_DISCONNECT | WIFICTL_OFF | WIFICTL_ON | WIFICTL_MSG | WIFICTL_WPS_SUCCESS | WIFICTL_WPS_FAILED | WIFICTL_CONNECT_IP, statusbar_wifictl_event_cb, "statusbar wifi" );
+    blectl_register_cb( BLECTL_CONNECT | BLECTL_DISCONNECT | BLECTL_ON | BLECTL_OFF, statusbar_blectl_event_cb, "statusbar bluetooth" );
+    wifictl_register_cb( WIFICTL_CONNECT | WIFICTL_DISCONNECT | WIFICTL_OFF | WIFICTL_ON | WIFICTL_MSG | WIFICTL_WPS_SUCCESS | WIFICTL_WPS_FAILED | WIFICTL_CONNECT_IP, statusbar_wifictl_event_cb, "statusbar wifi" );
     rtcctl_register_cb( RTCCTL_ALARM_ENABLED | RTCCTL_ALARM_DISABLED, statusbar_rtcctl_event_cb, "statusbar rtc" );
     bma_register_cb( BMACTL_STEPCOUNTER, statusbar_bmactl_event_cb, "statusbar stepcounter" );
     pmu_register_cb( PMUCTL_STATUS, statusbar_pmuctl_event_cb, "statusbar pmu");
     display_register_cb( DISPLAYCTL_BRIGHTNESS, statusbar_displayctl_event_cb, "statusbar display" );
- //   gpsctl_register_cb( GPSCTL_ENABLE | GPSCTL_DISABLE | GPSCTL_FIX | GPSCTL_NOFIX, statusbar_gpsctl_event_cb, "statusbar gps" );
+    gpsctl_register_cb( GPSCTL_ENABLE | GPSCTL_DISABLE | GPSCTL_FIX | GPSCTL_NOFIX, statusbar_gpsctl_event_cb, "statusbar gps" );
     styles_register_cb( STYLE_DARKMODE | STYLE_LIGHTMODE, statusbar_style_event_cb, "statusbar style event" );
 
     statusbar_task = lv_task_create( statusbar_update_task, 250, LV_TASK_PRIO_MID, NULL );
@@ -379,7 +377,6 @@ bool statusbar_gpsctl_event_cb( EventBits_t event, void *arg ) {
     /*
      * check if statusbar ready
      */
-    /*
     if ( !statusbar_init ) {
         log_e("statusbar not initialized");
         return( true );
@@ -405,7 +402,6 @@ bool statusbar_gpsctl_event_cb( EventBits_t event, void *arg ) {
             statusbar_style_icon( STATUSBAR_GPS, STATUSBAR_STYLE_GRAY );
             break;
     }
-    */
     return( true );
 
 }
@@ -561,12 +557,11 @@ bool statusbar_rtcctl_event_cb( EventBits_t event, void *arg ) {
     statusbar_refresh_update = true;
     return( true );
 }
-/*
+
 bool statusbar_blectl_event_cb( EventBits_t event, void *arg ) {
     /*
      * check if statusbar ready
      */
-/*
     if ( !statusbar_init ) {
         log_e("statusbar not initialized");
         return( true );
@@ -588,12 +583,11 @@ bool statusbar_blectl_event_cb( EventBits_t event, void *arg ) {
     statusbar_refresh_update = true;
     return( true );
 }
-*/
+
 bool statusbar_wifictl_event_cb( EventBits_t event, void *arg ) {
     /*
      * check if statusbar ready
      */
-    /*
     if ( !statusbar_init ) {
         log_e("statusbar not initialized");
         return( true );
@@ -633,7 +627,6 @@ bool statusbar_wifictl_event_cb( EventBits_t event, void *arg ) {
                                     statusbar_show_icon( STATUSBAR_WIFI );
                                     break;
     }
-    */
     statusbar_refresh_update = true;
     return( true );
 }
@@ -728,11 +721,9 @@ void statusbar_sound_event_cb( lv_obj_t *sound, lv_event_t event ) {
 }
 
 void statusbar_wifi_event_cb( lv_obj_t *wifi, lv_event_t event ) {
-
     /*
      * check if statusbar ready
      */
-    /*
     if ( !statusbar_init ) {
         log_e("statusbar not initialized");
         return;
@@ -755,7 +746,6 @@ void statusbar_wifi_event_cb( lv_obj_t *wifi, lv_event_t event ) {
 //            mainbar_jump_to_tilenumber(wifi_get_setup_tile_num(), LV_ANIM_OFF);
             break;
     }
-    */
     statusbar_refresh_update = true;
 }
 
@@ -763,7 +753,6 @@ void statusbar_gps_event_cb( lv_obj_t *gps, lv_event_t event ) {
     /*
      * check if statusbar ready
      */
-    /*
     if ( !statusbar_init ) {
         log_e("statusbar not initialized");
         return;
@@ -785,15 +774,12 @@ void statusbar_gps_event_cb( lv_obj_t *gps, lv_event_t event ) {
             statusbar_refresh_update = true;
             break;
     }
-    */
 }
-/*
+
 void statusbar_bluetooth_event_cb( lv_obj_t *bluetooth, lv_event_t event ) {
-    */
     /*
      * check if statusbar ready
      */
-/*
     if ( !statusbar_init ) {
         log_e("statusbar not initialized");
         return;
@@ -811,7 +797,7 @@ void statusbar_bluetooth_event_cb( lv_obj_t *bluetooth, lv_event_t event ) {
                 default:
                     break;
             }
-            statusbar_refresh_update = true; 
+            statusbar_refresh_update = true;
             break;
         case ( LV_EVENT_LONG_PRESSED ):             
             statusbar_expand( false );
@@ -820,12 +806,11 @@ void statusbar_bluetooth_event_cb( lv_obj_t *bluetooth, lv_event_t event ) {
     }
     statusbar_refresh_update = true;
 }
-*/
+
 void statusbar_wifi_set_state( bool state, const char *wifiname ) {
     /*
      * check if statusbar ready
      */
-    /*
     if ( !statusbar_init ) {
         log_e("statusbar not initialized");
         return;
@@ -841,14 +826,12 @@ void statusbar_wifi_set_state( bool state, const char *wifiname ) {
     lv_label_set_text( statusbar_wifiiplabel, "" );
     lv_obj_align( statusbar_wifilabel, statusbar_wifi, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
     lv_obj_align( statusbar_wifiiplabel, statusbar_wifilabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
-    */
 }
 
 void statusbar_wifi_set_ip_state( bool state, const char *ip ) {
     /*
      * check if statusbar ready
      */
-    /*
     if ( !statusbar_init ) {
         log_e("statusbar not initialized");
         return;
@@ -856,14 +839,12 @@ void statusbar_wifi_set_ip_state( bool state, const char *ip ) {
 
     lv_label_set_text( statusbar_wifiiplabel, ip );
     lv_obj_align( statusbar_wifiiplabel, statusbar_wifilabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
-    */
 }
-/*
+
 void statusbar_bluetooth_set_state( bool state ) {
     /*
      * check if statusbar ready
      */
-/*
     if ( !statusbar_init ) {
         log_e("statusbar not initialized");
         return;
@@ -876,7 +857,7 @@ void statusbar_bluetooth_set_state( bool state ) {
         lv_imgbtn_set_state( statusbar_bluetooth, LV_BTN_STATE_PRESSED );
     }
 }
-*/
+
 void statusbar_hide_icon( statusbar_icon_t icon ) {
     /*
      * check if statusbar ready

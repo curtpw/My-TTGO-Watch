@@ -34,9 +34,9 @@
 #include "gui/widget_styles.h"
 #include "gui/widget_factory.h"
 
-//#include "hardware/sound.h"
-//#include "gui/sound/piep.h"
-//#include "gui/sound/test_c_mouth.h"
+#include "hardware/sound.h"
+#include "gui/sound/piep.h"
+#include "gui/sound/test_c_mouth.h"
 #include "hardware/motor.h"
 #include "hardware/powermgm.h"
 //#include "app/alarm_clock/alarm_in_progress.h"
@@ -267,7 +267,6 @@ void MLX90641_I2CInit()
 //int MLX90641_I2CRead(uint8_t slaveAddr, uint16_t startAddress, uint16_t nMemAddressRead, uint16_t *data)
 
 //int MLX90641_I2CRead(uint8_t _deviceAddress, unsigned int startAddress, unsigned int nWordsRead, uint16_t *data)
-/*
 int MLX90641_I2CRead(uint8_t _deviceAddress, uint16_t startAddress, uint16_t nWordsRead, uint16_t *data)
 {
     // nWordsRead must be <= 32767
@@ -287,7 +286,6 @@ int MLX90641_I2CRead(uint8_t _deviceAddress, uint16_t startAddress, uint16_t nWo
     }
     return 0;
 }
-*/
 //} 
 
 
@@ -296,9 +294,13 @@ int MLX90641_I2CRead(uint8_t _deviceAddress, uint16_t startAddress, uint16_t nWo
 
 
 
+
+
+/*
+
 int MLX90641_I2CRead(uint8_t slaveAddr, uint16_t startAddress, uint16_t nMemAddressRead, uint16_t *data)
 {
-  
+  */ 
     /*
     char cmd[2] = {0,0};
     char i2cData[1664] = {0};
@@ -337,7 +339,7 @@ int MLX90641_I2CRead(uint8_t slaveAddr, uint16_t startAddress, uint16_t nMemAddr
         i = cnt << 1;
         *p++ = (uint16_t)i2cData[i]*256 + (uint16_t)i2cData[i+1];
     }*/
-    
+    /*
     uint16_t bytesRemaining = nMemAddressRead * 2;
     uint16_t dataSpot = 0; //Start at beginning of array
     //Setup a series of chunked I2C_BUFFER_LENGTH byte reads
@@ -375,7 +377,7 @@ int MLX90641_I2CRead(uint8_t slaveAddr, uint16_t startAddress, uint16_t nMemAddr
     return 0;   
 } 
 
-
+*/
 
 void MLX90641_I2CFreqSet(int freq)
 {
@@ -1554,16 +1556,16 @@ static void wifimon_channel_select_event_handler( lv_obj_t * obj, lv_event_t eve
 
  //curt add
 static void Play_Target_Sound_task( lv_task_t * task ){   //curt add
-    //    sound_set_enabled_config( true );
-  //  sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
-  //  sound_play_progmem_wav( piep_wav, piep_wav_len ); 
+        sound_set_enabled_config( true );
+    sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
+    sound_play_progmem_wav( piep_wav, piep_wav_len ); 
     motor_vibe(100); 
 }
 
 static void wifimon_test_play_sound( void ) {
-       // sound_set_enabled_config( true );
-  //  sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
-  //  sound_play_progmem_wav(test_c_mouth_wav, test_c_mouth_wav_len);
+        sound_set_enabled_config( true );
+    sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
+    sound_play_progmem_wav(test_c_mouth_wav, test_c_mouth_wav_len);
 }
 
 
@@ -1921,9 +1923,9 @@ static void wifimon_hibernate_cb( void ) {
     //sound_set_enabled_config( true );   //CURT ADD
     //sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
     
-   // esp_wifi_set_promiscuous( false ); 
+    esp_wifi_set_promiscuous( false ); 
 
-  //  wifictl_off();
+    wifictl_off();
     /**
      * restore display timeout time
      */
@@ -1937,26 +1939,26 @@ static void wifimon_activate_cb( void ) {
     log_i("----------------- CURT -------- wifimon_activate_cb");
  //   alarm_in_progress_start_alarm();
 
-   // sound_set_enabled_config( true );
-  //  sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
+    sound_set_enabled_config( true );
+    sound_play_spiffs_mp3("/gui/sound/eyes.mp3");
 
- //   sound_set_enabled_config( true );   
-  //  sound_play_progmem_wav(test_c_mouth_wav, test_c_mouth_wav_len);
+    sound_set_enabled_config( true );   
+    sound_play_progmem_wav(test_c_mouth_wav, test_c_mouth_wav_len);
     /**
      * restart wifi
      */
-   // wifictl_off();
+    wifictl_off();
     /**
      * setup promiscuous mode
      */
 
-   // wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-  //  esp_wifi_init( &cfg );
-  //  esp_wifi_set_country( &wifi_country );
- //   esp_wifi_set_mode( WIFI_MODE_NULL ); 
- //   esp_wifi_start();
-  //  esp_wifi_set_promiscuous( true );
- //   esp_wifi_set_promiscuous_rx_cb( &wifimon_sniffer_packet_handler );
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    esp_wifi_init( &cfg );
+    esp_wifi_set_country( &wifi_country );
+    esp_wifi_set_mode( WIFI_MODE_NULL ); 
+    esp_wifi_start();
+    esp_wifi_set_promiscuous( true );
+    esp_wifi_set_promiscuous_rx_cb( &wifimon_sniffer_packet_handler );
     lv_roller_set_selected( channel_select, 0, LV_ANIM_OFF );
     wifimon_sniffer_set_channel( 1 );
 
@@ -2082,7 +2084,7 @@ static void wifimon_app_task( lv_task_t * task ) {
             log_i("MLX90641 FAIL");
         }
     } else { */
-        readMLX90641();
+  //      readMLX90641();
       //  delay(10);
    // }
 

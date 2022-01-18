@@ -7,7 +7,7 @@
 #include "touch.h"
 #include "motion.h"
 #include "display.h"
-//#include "gpsctl.h"
+#include "gpsctl.h"
 #include "timesync.h"
 #include "sound.h"
 #include "motor.h"
@@ -15,11 +15,11 @@
 #include "rtcctl.h"
 #include "sdcard.h"
 #include "wifictl.h"
-//#include "blectl.h"
+#include "blectl.h"
 #include "callback.h"
 #include "sensor.h"
 
-//#include "utils/fakegps.h"
+#include "utils/fakegps.h"
 #include "gui/splashscreen.h"
 #include "gui/screenshot.h"
 
@@ -129,7 +129,7 @@ void hardware_setup( void ) {
              */
             M5.begin();
         #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
-            log_i("----------------- CURT -------- hardware_setup in hardware.cpp & I2C speed = 400K & I2C scanner");
+            log_i("----------------- CURT -------- hardware_setup");
             TTGOClass *ttgo = TTGOClass::getWatch();
             /**
              * lvgl init
@@ -145,7 +145,7 @@ void hardware_setup( void ) {
                         /**
              * setup wire interface
              */
-            Wire.begin( 21, 22, (uint32_t)400000);
+            Wire.begin( 21, 22, 400000 );
             /**
              * scan i2c devices
              */
@@ -180,7 +180,7 @@ void hardware_setup( void ) {
             /**
              * setup wire interface
              */
-            Wire.begin( IICSDA, IICSCL, (uint32_t)1000000);
+            Wire.begin( IICSDA, IICSCL, 1000000 );
             /**
              * scan i2c devices
              */
@@ -237,14 +237,14 @@ void hardware_setup( void ) {
 
     pmu_setup();
     bma_setup();
-   // wifictl_setup();
+    wifictl_setup();
     touch_setup();
     rtcctl_setup();
     timesync_setup();
     sensor_setup();
     sound_read_config();
-    //fakegps_setup();
-    //blectl_read_config();
+    fakegps_setup();
+    blectl_read_config();
 
     splash_screen_stage_update( "init gui", 80 );
     splash_screen_stage_finish();
@@ -266,16 +266,16 @@ void hardware_post_setup( void ) {
 
     log_i("----------------- CURT -------- hardware_post_setup");
 
-   // if ( wifictl_get_autoon() && ( pmu_is_charging() || pmu_is_vbus_plug() || ( pmu_get_battery_voltage() > 3400) ) ) {
-   //     wifictl_on();
- //   }
-//
+    if ( wifictl_get_autoon() && ( pmu_is_charging() || pmu_is_vbus_plug() || ( pmu_get_battery_voltage() > 3400) ) ) {
+        wifictl_on();
+    }
+
     sound_setup();
-   // gpsctl_setup();
+    gpsctl_setup();
     powermgm_set_event( POWERMGM_WAKEUP );
 
     #ifndef NO_BLUETOOTH
-      //  blectl_setup();
+        blectl_setup();
     #endif
 
     display_set_brightness( display_get_brightness() );

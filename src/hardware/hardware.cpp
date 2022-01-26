@@ -7,19 +7,19 @@
 #include "touch.h"
 #include "motion.h"
 #include "display.h"
-//#include "gpsctl.h"
+#include "gpsctl.h"
 #include "timesync.h"
-//#include "sound.h"
+#include "sound.h"
 #include "motor.h"
 #include "pmu.h"
 #include "rtcctl.h"
-//#include "sdcard.h"
-//#include "wifictl.h"
-//#include "blectl.h"
+#include "sdcard.h"
+#include "wifictl.h"
+#include "blectl.h"
 #include "callback.h"
 #include "sensor.h"
 
-//#include "utils/fakegps.h"
+#include "utils/fakegps.h"
 #include "gui/splashscreen.h"
 #include "gui/screenshot.h"
 
@@ -49,7 +49,7 @@
     #include <Arduino.h>
     #include <SPIFFS.h>
     #include <Ticker.h>
-   // #include "esp_bt.h"
+    #include "esp_bt.h"
     #include "esp_task_wdt.h"
     #include "lvgl.h"
 
@@ -59,7 +59,7 @@
         #include <M5Core2.h>
     #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
         #include <TTGO.h>
-        #include <Wire.h> // curt add !!!!!!!!!!!!!!!!!
+      //  #include <Wire.h> // curt add !!!!!!!!!!!!!!!!!
     #elif defined( LILYGO_WATCH_2021 )    
         #include <twatch2021_config.h>
         #include <Wire.h>
@@ -129,7 +129,7 @@ void hardware_setup( void ) {
              */
             M5.begin();
         #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
-            log_i("----------------- CURT -------- hardware_setup");
+            log_i("================== hardware_setup");
             TTGOClass *ttgo = TTGOClass::getWatch();
             /**
              * lvgl init
@@ -139,25 +139,6 @@ void hardware_setup( void ) {
              * ttgo init
              */
             ttgo->begin();
-
-
-            //curt add!!!!!!!!!!!!!!!!!
-                        /**
-             * setup wire interface
-             */
-            log_i("----------------- CURT -------- set I2C speed to 1MBPS");
-           // Wire.begin( 21, 22, 400000 );
-            Wire.begin( 21, 22, 1000000 );
-            /**
-             * scan i2c devices
-             */
-            for( uint8_t address = 1; address < 127; address++ ) {
-                Wire.beginTransmission(address);
-                if ( Wire.endTransmission() == 0 )
-                    log_i("I2C device at: 0x%02x", address );
-
-            }
-            //END CURT ADD !!!!!!!!!!!!!!!!!!!!
 
 
         #elif defined( LILYGO_WATCH_2021 )
@@ -206,7 +187,7 @@ void hardware_setup( void ) {
     /**
      * driver init
      */
-   // sdcard_setup();
+    sdcard_setup();
     powermgm_setup();
     button_setup();
     motor_setup();
@@ -239,14 +220,75 @@ void hardware_setup( void ) {
 
     pmu_setup();
     bma_setup();
-  //  wifictl_setup();
+    wifictl_setup();
     touch_setup();
     rtcctl_setup();
     timesync_setup();
     sensor_setup();
- //   sound_read_config();
-//    fakegps_setup();
-//    blectl_read_config();
+    sound_read_config();
+    fakegps_setup();
+    blectl_read_config();
+
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!! ADD SERIAL1 HARDWARE UART FOR EXTERNAL COMMUNICATION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!! ADD SERIAL1 HARDWARE UART FOR EXTERNAL COMMUNICATION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     /**
+     * setup Serial1 UART interface for sensor daughter board
+     */
+
+    log_e("===================== disable BMA423 p39/p36 interupts");
+    ttgo->bma->enableStepCountInterrupt(false);
+    ttgo->bma->enableTiltInterrupt(false);
+    ttgo->bma->enableWakeupInterrupt(false);
+    ttgo->bma->enableAnyNoMotionInterrupt(false);
+    ttgo->bma->enableActivityInterrupt(false);
+    ttgo->bma->disableAccel();
+    delay(1);
+
+      //  log_i("================== setup Serial1 UART interface for sensor daughter board");
+    /*
+    #define SERIAL1_TX      36 
+    #define SERIAL1_RX      39 
+    HardwareSerial Serial1(1);
+    Serial1.begin(115200, SERIAL_8N1, SERIAL1_RX, SERIAL1_TX);
+    delay(20);
+
+    //MUST CONNECT TX and RX FOR TEST
+    log_i("Serial1 loop test");
+    if(Serial1.available()){
+        Serial1.write("a");
+    } else {
+        log_e("Serial1 not found");
+    }
+
+    if(Serial1.available()){ Serial.print(Serial1.read()); } 
+    if(Serial1.available()){ Serial1.write("b"); } 
+    if(Serial1.available()){ Serial.print(Serial1.read()); } 
+    if(Serial1.available()){ Serial1.write("c"); } 
+    if(Serial1.available()){ Serial.print(Serial1.read()); } 
+    if(Serial1.available()){ Serial1.write("d"); } 
+    if(Serial1.available()){ Serial.print(Serial1.read()); } 
+    */
+
+/*
+    log_i("================== setup Serial1 UART interface for sensor daughter board");
+    #define SERIAL1_TX      36 
+    #define SERIAL1_RX      39 
+    HardwareSerial *Serial1 = nullptr;
+    Serial1 = new HardwareSerial(1);
+    Serial1->begin(115200, SERIAL_8N1, SERIAL1_RX, SERIAL1_TX);
+    delay(20);
+
+    //MUST CONNECT TX and RX FOR TEST
+    log_i("Serial1 loop test");
+    if(Serial1->available()){
+        Serial1->write("Serial1 loop test worked!");
+        Serial.print(Serial1->read());  
+    } else {
+        log_e("Serial1 not found");
+    }
+    */
+
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!! END SERIAL1 HARDWARE UART FOR EXTERNAL COMMUNICATION
 
     splash_screen_stage_update( "init gui", 80 );
     splash_screen_stage_finish();
@@ -268,16 +310,16 @@ void hardware_post_setup( void ) {
 
     log_i("----------------- CURT -------- hardware_post_setup");
 
-    if ( /* wifictl_get_autoon() && */ ( pmu_is_charging() || pmu_is_vbus_plug() || ( pmu_get_battery_voltage() > 3400) ) ) {
-      //  wifictl_on();
+    if ( wifictl_get_autoon() && ( pmu_is_charging() || pmu_is_vbus_plug() || ( pmu_get_battery_voltage() > 3400) ) ) {
+        wifictl_on();
     }
 
-   // sound_setup();
-  //  gpsctl_setup();
+    sound_setup();
+    gpsctl_setup();
     powermgm_set_event( POWERMGM_WAKEUP );
 
     #ifndef NO_BLUETOOTH
-   //     blectl_setup();
+        blectl_setup();
     #endif
 
     display_set_brightness( display_get_brightness() );

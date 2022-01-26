@@ -21,7 +21,7 @@
  */
 #include "config.h"
 #include "utilities.h"
-
+#include "gps_test_data.h"
 
 #include "gui/mainbar/mainbar.h"
 #include "gui/mainbar/setup_tile/setup_tile.h"
@@ -32,7 +32,7 @@
 
 #include "hardware/motor.h"
 #include "hardware/display.h"
-
+#include "hardware/gpsctl.h"
 
 #ifdef NATIVE_64BIT
     #include "utils/logging.h"
@@ -43,7 +43,8 @@
 
 #endif
 
-
+lv_task_t *_gps_test_data_task = NULL;
+static volatile bool gps_test_data_start_trigger = false;
 
 lv_obj_t *utilities_tile=NULL;
 lv_style_t utilities_style;
@@ -52,9 +53,9 @@ uint32_t utilities_tile_num;
 lv_obj_t *reboot_btn = NULL;
 lv_obj_t *poweroff_btn = NULL;
 lv_obj_t *format_spiffs_btn = NULL;
-
+lv_obj_t *gps_test_data_btn = NULL;
 lv_obj_t *SpiffsWarningBox = NULL;
-
+lv_obj_t *gps_test_data_btn_label = NULL;
 
 static lv_style_t style_modal;
 
@@ -67,9 +68,9 @@ static void format_SPIFFS_utilities_event_cb( lv_obj_t * obj, lv_event_t event )
 static void format_SPIFFS( void );
 static void reboot_utilities_event_cb( lv_obj_t * obj, lv_event_t event );
 static void poweroff_utilities_event_cb( lv_obj_t * obj, lv_event_t event );
+static void gps_test_data_utilities_event_cb( lv_obj_t * obj, lv_event_t event );
 
-
-//void gps_test_data_task( lv_task_t * task );
+void gps_test_data_task( lv_task_t * task );
 
 void utilities_tile_setup( void ) {
     // get an app tile and copy mainstyle
@@ -96,7 +97,13 @@ void utilities_tile_setup( void ) {
     lv_obj_t *format_spiffs_btn_label = lv_label_create( format_spiffs_btn, NULL );
     lv_label_set_text( format_spiffs_btn_label, "Format\nSPIFFS");
     
-
+    gps_test_data_btn = lv_btn_create( utilities_tile, NULL);
+    lv_obj_set_event_cb( gps_test_data_btn, gps_test_data_utilities_event_cb );
+    lv_obj_set_size( gps_test_data_btn, lv_disp_get_hor_res( NULL ) / 3, 60);
+    lv_obj_add_style( gps_test_data_btn, LV_BTN_PART_MAIN, ws_get_button_style() );
+    lv_obj_align( gps_test_data_btn, utilities_tile, LV_ALIGN_IN_RIGHT_MID, -THEME_ICON_PADDING, -15);
+    gps_test_data_btn_label = lv_label_create( gps_test_data_btn, NULL );
+    lv_label_set_text( gps_test_data_btn_label, "send GPS\ntest data");
 
     //Add button for reboot
     reboot_btn = lv_btn_create( utilities_tile, NULL);
@@ -171,7 +178,7 @@ void utilities_tile_setup( void ) {
     lv_obj_align( last_reason_label, last_reboot_label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, THEME_ICON_PADDING );//Now that the text has changed, align it.
 
 #endif
-  //  _gps_test_data_task = lv_task_create( gps_test_data_task, 1000, LV_TASK_PRIO_MID, NULL );
+    _gps_test_data_task = lv_task_create( gps_test_data_task, 1000, LV_TASK_PRIO_MID, NULL );
 }
 
 static void enter_utilities_event_cb( lv_obj_t * obj, lv_event_t event ) {
@@ -293,3 +300,72 @@ static void poweroff_utilities_event_cb( lv_obj_t * obj, lv_event_t event ) {
     }
 }
 
+static void gps_test_data_utilities_event_cb( lv_obj_t * obj, lv_event_t event ) {
+    switch( event ) {
+        case( LV_EVENT_CLICKED ):       
+            gps_test_data_start_trigger = true;
+            break;
+    }
+}
+
+void gps_test_data_task( lv_task_t * task ) {
+    static bool task_is_running = false;
+    static uint8_t *gps_data = NULL;
+    /**
+     * set startcondition
+     */
+    if ( gps_test_data_start_trigger ) {
+        if ( task_is_running ) {
+            task_is_running = false;
+            gps_data = NULL;
+            lv_label_set_text( gps_test_data_btn_label, "send GPS\ntest data");
+        }
+        else {
+            if( !gps_data )
+                gps_data = (uint8_t*)gps_test_data_csv;
+            task_is_running = true;
+            lv_label_set_text( gps_test_data_btn_label, "stop GPS\ntest data");
+        }        
+        gps_test_data_start_trigger = false;
+    }
+    /**
+     * check if task running
+     */
+    if ( task_is_running ) {
+        if ( gps_data ) {
+            uint8_t line[64]="";
+            uint8_t *line_p = line;
+            double lat = 0;
+            double lon = 0;
+            double altitude = 0;
+            /**
+             * read line
+             */
+            while( *gps_data != '\r' && *gps_data != '\n' && *gps_data != '\0' ) {
+                *line_p = *gps_data;
+                line_p++;
+                gps_data++;
+            }
+            /**
+             * check abort condition, restart
+             */
+            if ( *gps_data == '\0' ) {
+                gps_data = (uint8_t*)gps_test_data_csv;
+            }
+            else {
+                gps_data++;
+            }
+            *line_p = '\0';
+            /**
+             * pharse string
+             */
+            if( strlen( (const char*)line ) > 10 ) {
+                lon = atof( (const char*)line );
+                lat = atof( (const char*)strchr( (const char*)line, ',' ) + 1 );
+                altitude = atof( (const char*)(const char*)strrchr( (const char*)line, ',' ) + 1 );
+                gpsctl_set_location( lat, lon, altitude, GPS_SOURCE_FAKE, false );
+                log_d("gps-data: %s (%f,%f,%f)", line, lon, lat, altitude );
+            }
+        }
+    }
+}

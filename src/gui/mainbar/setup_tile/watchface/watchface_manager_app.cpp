@@ -27,7 +27,7 @@
 #include "gui/mainbar/setup_tile/watchface/watchface_tile.h"
 #include "watchface_manager_app.h"
 
-//#include "gui/mainbar/setup_tile/bluetooth_settings/bluetooth_message.h"
+#include "gui/mainbar/setup_tile/bluetooth_settings/bluetooth_message.h"
 #include "gui/mainbar/app_tile/app_tile.h"
 #include "gui/mainbar/main_tile/main_tile.h"
 #include "gui/mainbar/mainbar.h"
@@ -36,7 +36,7 @@
 #include "gui/widget_factory.h"
 
 #include "hardware/display.h"
-//#include "hardware/wifictl.h"
+#include "hardware/wifictl.h"
 
 #include "utils/json_psram_allocator.h"
 #include "utils/uri_load/uri_load.h"
@@ -51,7 +51,7 @@
     #include <pwd.h>
     #include "utils/logging.h"
 #else
-//    #include <WiFi.h>
+    #include <WiFi.h>
     #include <Arduino.h>
 
     #ifdef M5PAPER
@@ -252,10 +252,9 @@ void watchface_manager_app_setup( uint32_t tile_num ) {
     /**
      * register wifictl call back
      */
-   // wifictl_register_cb( WIFICTL_CONNECT_IP, watchface_manager_wifictl_event_cb, "watchface wifictl" );
+    wifictl_register_cb( WIFICTL_CONNECT_IP, watchface_manager_wifictl_event_cb, "watchface wifictl" );
 }
 
-/*
 bool watchface_manager_wifictl_event_cb( EventBits_t event, void *arg ) {
     switch( event ) {
         case WIFICTL_CONNECT_IP:
@@ -264,7 +263,6 @@ bool watchface_manager_wifictl_event_cb( EventBits_t event, void *arg ) {
     }
     return( true );
 }
-*/
 
 void watchface_manager_theme_install_task( lv_task_t * task ) {
     /**

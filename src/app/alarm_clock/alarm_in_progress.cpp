@@ -26,13 +26,13 @@
 
 #include "gui/mainbar/mainbar.h"
 #include "gui/statusbar.h"
-//#include "gui/sound/piep.h"
+#include "gui/sound/piep.h"
 #include "gui/widget_factory.h"
 #include "gui/widget_styles.h"
 #include "hardware/display.h"
 #include "hardware/motor.h"
 #include "hardware/rtcctl.h"
-//#include "hardware/sound.h"
+#include "hardware/sound.h"
 #include "hardware/timesync.h"
 
 #define BEEP_TO_VIBE_DELAY 2
@@ -98,7 +98,7 @@ static void alarm_task_function(lv_task_t * task){
             if (beep_often_countown > 0){
                 beep_often_countown--;
             }
-        //    sound_play_progmem_wav(piep_wav, piep_wav_len);
+            sound_play_progmem_wav(piep_wav, piep_wav_len);
         }
     }
     

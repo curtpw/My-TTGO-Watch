@@ -5,7 +5,7 @@
 #include "powermgm.h"
 #include "framebuffer.h"
 #include "touch.h"
-#include "motion.h"
+//#include "motion.h"   // =================================================== CURT DISABLE
 #include "display.h"
 #include "gpsctl.h"
 #include "timesync.h"
@@ -219,7 +219,7 @@ void hardware_setup( void ) {
     splash_screen_stage_update( "init hardware", 60 );  
 
     pmu_setup();
-    bma_setup();
+    //bma_setup();   // =================================================== CURT DISABLE
     wifictl_setup();
     touch_setup();
     rtcctl_setup();
@@ -234,7 +234,7 @@ void hardware_setup( void ) {
      /**
      * setup Serial1 UART interface for sensor daughter board
      */
-
+/*
     log_e("===================== disable BMA423 p39/p36 interupts");
     ttgo->bma->enableStepCountInterrupt(false);
     ttgo->bma->enableTiltInterrupt(false);
@@ -243,6 +243,7 @@ void hardware_setup( void ) {
     ttgo->bma->enableActivityInterrupt(false);
     ttgo->bma->disableAccel();
     delay(1);
+    */
 
       //  log_i("================== setup Serial1 UART interface for sensor daughter board");
     /*

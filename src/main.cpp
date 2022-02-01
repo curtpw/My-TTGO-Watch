@@ -9,7 +9,7 @@
 #include "app/example_app/example_app.h"
 //#include "app/examp_audio_app/examp_audio_app.h"   //curt test
 //#include "app/gps_status/gps_status.h"
-#include "app/tiltmouse/tiltmouse_app.h"
+//#include "app/tiltmouse/tiltmouse_app.h"
 #include "app/kodi_remote/kodi_remote_app.h"
 #include "app/osmand/osmand_app.h"
 #include "app/powermeter/powermeter_app.h"
@@ -20,9 +20,9 @@
 #include "app/wifimon/wifimon_app.h"
 #include "app/calendar/calendar.h"
 #include "app/weather/weather.h"
-#include "app/activity/activity.h"
+//#include "app/activity/activity.h"
 #include "app/fx_rates/fx_rates.h"
-#include "app/IRController/IRController.h"
+//#include "app/IRController/IRController.h"
 #include "app/alarm_clock/alarm_clock.h"
 
 #if defined( NATIVE_64BIT )
@@ -55,12 +55,12 @@ void setup() {
     weather_app_setup();
     stopwatch_app_setup();
     alarm_clock_setup();
-    activity_app_setup();
+    //activity_app_setup();
     calendar_app_setup();
-    tiltmouse_app_setup();
+    //tiltmouse_app_setup();
     //mail_app_setup();
     //gps_status_setup();
-    IRController_setup();
+    //IRController_setup();
     sailing_setup();
     osmand_app_setup();
     fxrates_app_setup();
